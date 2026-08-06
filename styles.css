@@ -1413,6 +1413,9 @@ h2 {
 .section-collapse-toggle::before { content: '⌄'; font-size: 1.35rem; font-weight: 900; line-height: 1; transition: transform 160ms ease; }
 .update-collapsible-section.is-collapsed .section-collapse-toggle::before { transform: rotate(-90deg); }
 .section-collapse-toggle:hover, .section-collapse-toggle:focus-visible { border-color: var(--accent); color: var(--surface); background: var(--accent); transform: scale(1.05); }
+:root:not([data-theme="dark"]) .section-collapse-toggle { border-color: #17201c; color: #fffdf8; background: #17201c; box-shadow: 0 0 0 2px rgba(19, 168, 132, 0.2), 0 2px 0 rgba(23, 32, 28, 0.2); }
+:root:not([data-theme="dark"]) .section-collapse-toggle:hover,
+:root:not([data-theme="dark"]) .section-collapse-toggle:focus-visible { border-color: #13a884; color: #fffdf8; background: #13a884; box-shadow: 0 0 0 3px rgba(19, 168, 132, 0.2), 0 2px 0 rgba(23, 32, 28, 0.2); }
 :root[data-theme="dark"] .section-collapse-toggle { border-color: #f7fff9; color: #101713; background: #f7fff9; box-shadow: 0 0 0 2px rgba(36, 201, 157, 0.32), 0 2px 0 rgba(0, 0, 0, 0.4); }
 :root[data-theme="dark"] .section-collapse-toggle:hover,
 :root[data-theme="dark"] .section-collapse-toggle:focus-visible { border-color: #24c99d; color: #101713; background: #24c99d; box-shadow: 0 0 0 3px rgba(36, 201, 157, 0.28), 0 2px 0 rgba(0, 0, 0, 0.4); }
