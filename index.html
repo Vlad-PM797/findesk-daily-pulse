@@ -1,0 +1,207 @@
+﻿<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Findesk Daily Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero__copy">
+        <p class="eyebrow">Findesk daily pulse</p>
+        <h1 id="page-title">Денний звіт</h1>
+        <p id="report-subtitle" class="subtitle">Завантажую reports/current.md...</p>
+      </div>
+      <div class="hero__meta" aria-label="Статус завантаження">
+        <span id="source-status">Очікування файлу</span>
+        <span id="updated-at"></span>
+        <div class="theme-toggle" aria-label="Тема сторінки">
+          <button class="theme-button is-active" type="button" data-theme-value="light" aria-pressed="true">Світла</button>
+          <button class="theme-button" type="button" data-theme-value="dark" aria-pressed="false">Темна</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="kpi-grid" aria-label="Ключові показники">
+      <article class="metric metric--worksection">
+        <span>Worksection закрито</span>
+        <strong id="kpi-worksection">0</strong>
+        <small id="kpi-worksection-note"></small>
+      </article>
+      <article class="metric metric--github">
+        <span>GitHub PR закрито</span>
+        <strong id="kpi-github">0</strong>
+        <small id="kpi-github-note"></small>
+      </article>
+      <article class="metric metric--active">
+        <span>В роботі</span>
+        <strong id="kpi-active">0</strong>
+        <small>продуктових задач</small>
+      </article>
+      <article class="metric metric--review">
+        <span>Code Review</span>
+        <strong id="kpi-review">0</strong>
+        <small>відкриті PR</small>
+      </article>
+    </section>
+
+    <nav class="view-switcher" aria-label="Режими інфографіки">
+      <button class="view-button" type="button" data-view-target="dashboard">Dashboard</button>
+      <button class="view-button is-active" type="button" data-view-target="system-map">System Map</button>
+      <button class="view-button" type="button" data-view-target="service-matrix">Service Matrix</button>
+      <button class="view-button" type="button" data-view-target="data-flows">Data Flows</button>
+      <button class="view-button" type="button" data-view-target="modules">Modules Map</button>
+      <button class="view-button" type="button" data-view-target="kanban">Kanban</button>
+      <button class="view-button" type="button" data-view-target="executive">Executive</button>
+    </nav>
+
+    <div class="view-panel" data-view="dashboard">
+    <section class="stage-panel" aria-labelledby="stages-title">
+      <div class="section-heading">
+        <p class="eyebrow">Операційна картина</p>
+        <h2 id="stages-title">Стадії проєкту</h2>
+      </div>
+      <div id="stage-bars" class="bars"></div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel chart-panel" aria-labelledby="github-title">
+        <div class="section-heading">
+          <p class="eyebrow">GitHub</p>
+          <h2 id="github-title">Функціональні блоки дня</h2>
+        </div>
+        <div class="chart-row">
+          <div id="donut-chart" class="donut" role="img" aria-label="Розподіл закритих PR за блоками"></div>
+          <ul id="github-legend" class="legend"></ul>
+        </div>
+      </article>
+
+      <article class="panel" aria-labelledby="people-title">
+        <div class="section-heading">
+          <p class="eyebrow">Worksection</p>
+          <h2 id="people-title">Закрито за виконавцями</h2>
+        </div>
+        <div id="people-bars" class="people-bars"></div>
+      </article>
+    </section>
+
+    <section class="risk-strip" aria-labelledby="risk-title">
+      <div class="section-heading">
+        <p class="eyebrow">Фокус</p>
+        <h2 id="risk-title">Ризики та хвости</h2>
+      </div>
+      <div id="risk-list" class="risk-list"></div>
+    </section>
+
+    <section class="tasks" aria-labelledby="tasks-title">
+      <div class="section-heading">
+        <p class="eyebrow">Деталі</p>
+        <h2 id="tasks-title">Списки зі звіту</h2>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Фільтр задач">
+        <button class="tab is-active" type="button" data-tab="done">Виконано</button>
+        <button class="tab" type="button" data-tab="active">В роботі</button>
+        <button class="tab" type="button" data-tab="review">Code Review</button>
+      </div>
+      <div id="task-list" class="task-list"></div>
+    </section>
+    </div>
+
+    <section class="view-panel modules-view" data-view="modules" aria-labelledby="modules-view-title">
+      <div class="section-heading">
+        <p class="eyebrow">Product map</p>
+        <h2 id="modules-view-title">Карта модулів і сервісів</h2>
+      </div>
+      <div id="modules-map" class="modules-map"></div>
+    </section>
+
+    <section class="view-panel kanban-view" data-view="kanban" aria-labelledby="kanban-view-title">
+      <div class="section-heading">
+        <p class="eyebrow">Flow</p>
+        <h2 id="kanban-view-title">Kanban по задачах</h2>
+      </div>
+      <div id="kanban-board" class="kanban-board"></div>
+    </section>
+
+    <section class="view-panel executive-view" data-view="executive" aria-labelledby="executive-view-title">
+      <div class="section-heading">
+        <p class="eyebrow">One page</p>
+        <h2 id="executive-view-title">Executive summary</h2>
+      </div>
+      <div id="executive-summary" class="executive-summary"></div>
+    </section>
+
+    <section class="view-panel architecture-view is-active" data-view="system-map" aria-labelledby="system-map-title">
+      <div class="section-heading">
+        <p id="update-task-eyebrow" class="eyebrow">Оновлення</p>
+        <h2 id="system-map-title">Блоки та задачі апдейту</h2>
+      </div>
+      <div class="system-map-kpis" aria-label="Показники карти системи">
+        <article class="system-map-kpi system-map-kpi--services"><span class="system-map-kpi__icon" aria-hidden="true">◈</span><span>Сервіси</span><strong id="system-map-services">0</strong></article>
+        <article class="system-map-kpi system-map-kpi--levels"><span class="system-map-kpi__icon" aria-hidden="true">▱</span><span>Рівні</span><strong id="system-map-levels">0</strong></article>
+        <article class="system-map-kpi system-map-kpi--flows"><span class="system-map-kpi__icon" aria-hidden="true">⇄</span><span>Потоки</span><strong id="system-map-flows">0</strong></article>
+        <article class="system-map-kpi system-map-kpi--attention"><span class="system-map-kpi__icon" aria-hidden="true">!</span><span>Зони уваги</span><strong id="system-map-attention">0</strong></article>
+      </div>
+      <div class="architecture-toolbar" role="toolbar" aria-label="Фільтри карти системи">
+        <label class="search-field"><span>Пошук</span><input id="structure-search" type="search" placeholder="Сервіс, домен або задача"></label>
+        <div class="architecture-filter-row">
+          <div class="filter-group" role="group" aria-label="Статус сервісів">
+            <button class="filter-button is-active" type="button" data-structure-filter="all">Всі</button>
+            <button class="filter-button" type="button" data-structure-filter="active">Є активні</button>
+            <button class="filter-button" type="button" data-structure-filter="pr">Є PR</button>
+            <button class="filter-button" type="button" data-structure-filter="risk">Є ризики</button>
+          </div>
+          <label class="check-field"><input id="structure-related-only" type="checkbox"> Тільки зв’язані</label>
+        </div>
+      </div>
+      <div id="structure-warning" class="source-warning" hidden></div>
+      <div class="architecture-layout">
+        <div id="system-map" class="system-map"></div>
+      </div>
+      <div id="service-detail-overlay" class="service-detail-overlay" hidden>
+        <button class="service-detail-overlay__backdrop" type="button" data-detail-close aria-label="Закрити деталі"></button>
+        <aside id="service-detail" class="service-detail" aria-live="polite">
+          <button class="service-detail__close" type="button" data-detail-close aria-label="Закрити деталі">×</button>
+          <p class="empty">Вибери сервіс на карті, щоб побачити деталі.</p>
+        </aside>
+      </div>
+      <div class="system-map-footer"><div class="system-map-legend"><span><i class="system-dot system-dot--healthy"></i> Стабільно</span><span><i class="system-dot system-dot--review"></i> Потребує уваги</span><span><i class="system-dot system-dot--attention"></i> Увага</span></div><span class="system-map-hint">Натисніть на сервіс, щоб відкрити деталі</span></div>
+
+    </section>
+
+    <section class="view-panel matrix-view" data-view="service-matrix" aria-labelledby="service-matrix-title">
+      <div class="section-heading">
+        <p class="eyebrow">Operations × Architecture</p>
+        <h2 id="service-matrix-title">Матриця сервісів і активності</h2>
+      </div>
+      <div class="matrix-toolbar">
+        <button class="filter-button is-active" type="button" data-matrix-mode="all">Всі сервіси</button>
+        <button class="filter-button" type="button" data-matrix-mode="changes">Тільки зміни за день</button>
+        <button class="filter-button" type="button" data-matrix-sort="activity">Сортувати за активністю</button>
+      </div>
+      <div class="matrix-scroll"><table class="service-matrix"><thead><tr><th>Домен</th><th>Сервіс</th><th>Призначення</th><th>Виконано</th><th>В роботі</th><th>PR</th><th>Статус</th><th>Залежності</th></tr></thead><tbody id="service-matrix-body"></tbody></table></div>
+    </section>
+
+    <section class="view-panel flows-view" data-view="data-flows" aria-labelledby="data-flows-title">
+      <div class="section-heading">
+        <p class="eyebrow">System behavior</p>
+        <h2 id="data-flows-title">Ключові потоки даних</h2>
+      </div>
+      <div id="data-flows-list" class="data-flows-list"></div>
+      <aside id="flow-detail" class="flow-detail" aria-live="polite"><p class="empty">Натисни на крок потоку, щоб побачити пов’язані сервіси.</p></aside>
+    </section>
+
+    <section class="howto" aria-labelledby="howto-title">
+      <div class="section-heading">
+        <p class="eyebrow">Оновлення</p>
+        <h2 id="howto-title">Куди класти щоденний файл</h2>
+      </div>
+      <p>Замінюй файл <code>D:\deyliky\reports\current.md</code> на новий markdown-звіт. Потім онови сторінку в браузері.</p>
+    </section>
+  </main>
+
+  <script src="app.js?v=20260806-multiple-parties"></script>
+</body>
+</html>
