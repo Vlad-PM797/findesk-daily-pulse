@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Findesk Daily Pulse</title>
-    <link rel="stylesheet" href="styles.css?v=20260806-sticky-header-20260806">
+    <link rel="stylesheet" href="styles.css?v=20260806-dashboard-no-duplicates-20260806">
 </head>
 <body>
   <main class="shell">
@@ -58,19 +58,19 @@
     </header>
 
     <div class="view-panel" data-view="dashboard">
-    <section class="stage-panel" aria-labelledby="stages-title">
+    <section class="stage-panel dashboard-attention" aria-labelledby="risk-title">
       <div class="section-heading">
-        <p class="eyebrow">Операційна картина</p>
-        <h2 id="stages-title">Стадії проєкту</h2>
+        <p class="eyebrow">Рішення</p>
+        <h2 id="risk-title">Що потребує уваги</h2>
       </div>
-      <div id="stage-bars" class="bars"></div>
+      <div id="risk-list" class="risk-list"></div>
     </section>
 
     <section class="dashboard-grid">
       <article class="panel chart-panel" aria-labelledby="github-title">
         <div class="section-heading">
-          <p class="eyebrow">GitHub</p>
-          <h2 id="github-title">Функціональні блоки дня</h2>
+          <p class="eyebrow">Розподіл</p>
+          <h2 id="github-title">Задачі за блоками</h2>
         </div>
         <div class="chart-row">
           <div id="donut-chart" class="donut" role="img" aria-label="Розподіл закритих PR за блоками"></div>
@@ -80,19 +80,11 @@
 
       <article class="panel" aria-labelledby="people-title">
         <div class="section-heading">
-          <p class="eyebrow">Worksection</p>
-          <h2 id="people-title">Закрито за виконавцями</h2>
+          <p class="eyebrow">Деталі</p>
+          <h2 id="people-title">Далі — деталізація</h2>
         </div>
         <div id="people-bars" class="people-bars"></div>
       </article>
-    </section>
-
-    <section class="risk-strip" aria-labelledby="risk-title">
-      <div class="section-heading">
-        <p class="eyebrow">Фокус</p>
-        <h2 id="risk-title">Ризики та хвости</h2>
-      </div>
-      <div id="risk-list" class="risk-list"></div>
     </section>
 
     <section class="tasks" aria-labelledby="tasks-title">

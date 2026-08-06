@@ -331,6 +331,15 @@ h2 {
   font-size: 0.7rem;
 }
 
+[data-view="dashboard"] .dashboard-attention { padding-bottom: 0.35rem; }
+[data-view="dashboard"] .dashboard-grid { margin-top: 0.1rem; }
+.dashboard-route { display: grid; gap: 0.35rem; padding: 0.75rem; border: 1px solid var(--line); background: var(--surface); }
+.dashboard-route + .dashboard-route { margin-top: 0.55rem; }
+.dashboard-route strong { font-size: 0.92rem; }
+.dashboard-route span { color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+.dashboard-route__button { width: fit-content; margin-top: 0.2rem; border: 1px solid var(--line); border-radius: 999px; padding: 0.35rem 0.65rem; color: var(--ink); background: var(--surface); cursor: pointer; font: inherit; font-size: 0.76rem; font-weight: 800; }
+.dashboard-route__button:hover, .dashboard-route__button:focus-visible { border-color: var(--accent); color: var(--accent); }
+
 [data-view="dashboard"] h2 {
   font-size: clamp(1rem, 1.8vw, 1.35rem);
 }

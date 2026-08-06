@@ -1049,19 +1049,11 @@
   function renderUpdateDashboard(report) {
     const tasks = report.updateTasks || [];
     const stats = updateModeStats(tasks);
-    const stageItems = [
-      { label: 'Всього задач', value: tasks.length, note: `${new Set(tasks.map((task) => task.domain)).size} блоків` },
-      { label: 'В роботі', value: tasks.length, note: 'усі задачі апдейту' },
-      { label: 'Без фідбеку', value: stats.noFeedback, note: `${stats.questions} відкритих питань` },
-      { label: 'Дедлайн завтра', value: stats.warning.length, note: `${stats.overdue.length} протерміновано` }
-    ];
-    renderBars(document.getElementById('stage-bars'), stageItems, Math.max(...stageItems.map((item) => item.value), 1));
-    document.querySelector('#github-title')?.replaceChildren(document.createTextNode('Блоки апдейту'));
-    document.querySelector('#people-title')?.replaceChildren(document.createTextNode('Розробники апдейту'));
-    document.querySelector('#risk-title')?.replaceChildren(document.createTextNode('Дедлайни та увага'));
+    document.querySelector('#github-title')?.replaceChildren(document.createTextNode('Задачі за блоками'));
+    document.querySelector('#people-title')?.replaceChildren(document.createTextNode('Далі — деталізація'));
     document.querySelector('#tasks-title')?.replaceChildren(document.createTextNode('Задачі апдейту'));
-    document.querySelector('[aria-labelledby="github-title"] .eyebrow')?.replaceChildren(document.createTextNode('Апдейт'));
-    document.querySelector('[aria-labelledby="people-title"] .eyebrow')?.replaceChildren(document.createTextNode('Відповідальні'));
+    document.querySelector('[aria-labelledby="github-title"] .eyebrow')?.replaceChildren(document.createTextNode('Розподіл'));
+    document.querySelector('[aria-labelledby="people-title"] .eyebrow')?.replaceChildren(document.createTextNode('Деталі'));
     const configureCollapsedSection = (selector, label) => {
       const section = document.querySelector(selector);
       const heading = section?.querySelector('.section-heading');
@@ -1083,7 +1075,6 @@
       }
       toggle.setAttribute('aria-expanded', 'false');
     };
-    configureCollapsedSection('[aria-labelledby="risk-title"]', 'Дедлайни та увага');
     configureCollapsedSection('[aria-labelledby="tasks-title"]', 'Задачі апдейту');
 
     const palette = ['#13a884', '#4f7cff', '#f0a536', '#d95f76', '#7c5cff', '#1d9aaa', '#6b7280'];
@@ -1097,9 +1088,15 @@
     chart.innerHTML = `<div><strong>${tasks.length}</strong><span>задач в апдейті</span></div>`;
     legend.innerHTML = byDomain.map(([domain, items], index) => `<li><span style="background:${palette[index % palette.length]}"></span><strong>${items.length}</strong>${escapeHtml(domain)}</li>`).join('');
 
-    const people = [...new Map(tasks.flatMap((task) => task.developer.split(',').map((developer) => developer.trim()).filter((developer) => developer.startsWith('@')).map((developer) => [developer, tasks.filter((item) => item.developer.includes(developer))]))).entries()];
     const peopleContainer = document.getElementById('people-bars');
-    peopleContainer.innerHTML = people.length ? people.map(([developer, items]) => `<div class="person-row"><div><strong>${escapeHtml(developer)}</strong><span>${items.length} задач в роботі</span></div><div class="person-meter"><span style="width:${Math.round((items.length / Math.max(tasks.length, 1)) * 100)}%"></span></div></div>`).join('') : '<p class="empty">Розробники не вказані.</p>';
+    peopleContainer.innerHTML = `<div class="dashboard-route"><strong>${tasks.length} задач у повному списку</strong><span>Розробники, замовники, два дедлайни та статуси відкриваються у деталях.</span><button type="button" class="dashboard-route__button" data-dashboard-route="tasks">Відкрити задачі</button></div><div class="dashboard-route"><strong>${stats.developers.length} розробники апдейту</strong><span>${escapeHtml(stats.developers.join(' · ') || 'Не вказані')}</span><button type="button" class="dashboard-route__button" data-dashboard-route="kanban">Відкрити Kanban</button></div>`;
+    peopleContainer.querySelectorAll('[data-dashboard-route]').forEach((button) => button.addEventListener('click', () => {
+      if (button.dataset.dashboardRoute === 'kanban') {
+        document.querySelector('[data-view-target="kanban"]')?.click();
+      } else {
+        document.querySelector('[aria-labelledby="tasks-title"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }));
 
     const risks = [...stats.overdue, ...stats.warning];
     document.getElementById('risk-list').innerHTML = risks.length ? risks.map((task) => {
