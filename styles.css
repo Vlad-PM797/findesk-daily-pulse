@@ -1406,6 +1406,12 @@ h2 {
 .update-risk-item__dot { width: 0.58rem; height: 0.58rem; border-radius: 50%; background: var(--risk-color); }
 .update-risk-item__detail { border-top: 1px solid var(--line); padding: 0.7rem 0.85rem; color: var(--muted); font-size: 0.8rem; }
 .update-risk-item__detail p { margin: 0.3rem 0 0; }
+.update-collapsible-section .section-heading { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0; }
+.update-collapsible-section .section-heading > :not(.section-collapse-toggle) { flex: 0 1 auto; }
+.section-collapse-toggle { display: grid; place-items: center; flex: 0 0 2rem; width: 2rem; height: 2rem; margin-left: auto; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: var(--surface); cursor: pointer; font: inherit; }
+.section-collapse-toggle::before { content: '⌄'; font-size: 1.1rem; line-height: 1; transition: transform 160ms ease; }
+.update-collapsible-section.is-collapsed .section-collapse-toggle::before { transform: rotate(-90deg); }
+.section-collapse-toggle:hover, .section-collapse-toggle:focus-visible { border-color: var(--accent); color: var(--accent); }
 .status-pill--healthy { --status-color: #08704b; }
 .status-pill--warning { --status-color: #9b6500; }
 .status-pill--overdue { --status-color: #b3324b; }

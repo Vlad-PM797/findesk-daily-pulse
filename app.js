@@ -1062,6 +1062,31 @@
     document.querySelector('#tasks-title')?.replaceChildren(document.createTextNode('Задачі апдейту'));
     document.querySelector('[aria-labelledby="github-title"] .eyebrow')?.replaceChildren(document.createTextNode('Апдейт'));
     document.querySelector('[aria-labelledby="people-title"] .eyebrow')?.replaceChildren(document.createTextNode('Відповідальні'));
+    const configureCollapsedSection = (selector, label) => {
+      const section = document.querySelector(selector);
+      const heading = section?.querySelector('.section-heading');
+      if (!section || !heading) return;
+      section.classList.add('update-collapsible-section', 'is-collapsed');
+      section.querySelectorAll(':scope > *:not(.section-heading)').forEach((element) => { element.hidden = true; });
+      let toggle = heading.querySelector('[data-update-section-toggle]');
+      if (!toggle) {
+        toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'section-collapse-toggle';
+        toggle.dataset.updateSectionToggle = 'true';
+        toggle.title = `Розгорнути: ${label}`;
+        heading.append(toggle);
+        toggle.addEventListener('click', () => {
+          const collapsed = section.classList.toggle('is-collapsed');
+          section.querySelectorAll(':scope > *:not(.section-heading)').forEach((element) => { element.hidden = collapsed; });
+          toggle.setAttribute('aria-expanded', String(!collapsed));
+          toggle.title = `${collapsed ? 'Розгорнути' : 'Згорнути'}: ${label}`;
+        });
+      }
+      toggle.setAttribute('aria-expanded', 'false');
+    };
+    configureCollapsedSection('[aria-labelledby="risk-title"]', 'Дедлайни та увага');
+    configureCollapsedSection('[aria-labelledby="tasks-title"]', 'Задачі апдейту');
 
     const palette = ['#13a884', '#4f7cff', '#f0a536', '#d95f76', '#7c5cff', '#1d9aaa', '#6b7280'];
     const byDomain = [...new Map(tasks.map((task) => [task.domain, tasks.filter((item) => item.domain === task.domain)])).entries()];
