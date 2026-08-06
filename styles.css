@@ -47,6 +47,17 @@ button, input, textarea { font: inherit; }
   padding: 0.75rem 1rem;
 }
 
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: -0.75rem -1rem 0;
+  padding: 0.75rem 1rem 0.35rem;
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  box-shadow: 0 0.55rem 1.2rem rgba(23, 32, 28, 0.08);
+  backdrop-filter: blur(14px);
+}
+
 .hero {
   min-height: auto;
   display: grid;
@@ -117,9 +128,6 @@ h2 {
 }
 
 .view-switcher {
-  position: sticky;
-  top: 0;
-  z-index: 8;
   display: flex;
   gap: 0.45rem;
   overflow-x: auto;

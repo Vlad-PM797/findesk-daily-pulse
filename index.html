@@ -4,11 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Findesk Daily Pulse</title>
-    <link rel="stylesheet" href="styles.css?v=20260806-toggle-both-themes-20260806">
+    <link rel="stylesheet" href="styles.css?v=20260806-sticky-header-20260806">
 </head>
 <body>
   <main class="shell">
-    <section class="hero" aria-labelledby="page-title">
+    <header class="sticky-header">
+      <section class="hero" aria-labelledby="page-title">
       <div class="hero__copy">
         <p class="eyebrow">Findesk daily pulse</p>
         <h1 id="page-title">Денний звіт</h1>
@@ -22,9 +23,9 @@
           <button class="theme-button" type="button" data-theme-value="dark" aria-pressed="false">Темна</button>
         </div>
       </div>
-    </section>
+      </section>
 
-    <section class="kpi-grid" aria-label="Ключові показники">
+      <section class="kpi-grid" aria-label="Ключові показники">
       <article class="metric metric--worksection">
         <span>Worksection закрито</span>
         <strong id="kpi-worksection">0</strong>
@@ -45,9 +46,9 @@
         <strong id="kpi-review">0</strong>
         <small>відкриті PR</small>
       </article>
-    </section>
+      </section>
 
-    <nav class="view-switcher" aria-label="Режими інфографіки">
+      <nav class="view-switcher" aria-label="Режими інфографіки">
       <button class="view-button" type="button" data-view-target="dashboard">Dashboard</button>
       <button class="view-button is-active" type="button" data-view-target="system-map">System Map</button>
       <button class="view-button" type="button" data-view-target="service-matrix">Service Matrix</button>
@@ -55,7 +56,8 @@
       <button class="view-button" type="button" data-view-target="modules">Modules Map</button>
       <button class="view-button" type="button" data-view-target="kanban">Kanban</button>
       <button class="view-button" type="button" data-view-target="executive">Executive</button>
-    </nav>
+      </nav>
+    </header>
 
     <div class="view-panel" data-view="dashboard">
     <section class="stage-panel" aria-labelledby="stages-title">
