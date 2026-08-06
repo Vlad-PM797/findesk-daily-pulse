@@ -1356,6 +1356,10 @@ h2 {
 .update-deadline-signal--warning { color: #a76a00; background: #fff0bd; }
 .update-deadline-signal--overdue { color: #c83c54; background: #ffe2e7; }
 .update-deadline-signal--muted { color: var(--muted); background: var(--surface-soft); }
+.legend li { display: grid; grid-template-columns: 0.65rem auto minmax(0, 1fr) auto; align-items: center; gap: 0.4rem; }
+.legend__label { min-width: 0; overflow-wrap: anywhere; }
+.legend__signals { display: inline-flex; align-items: center; gap: 0.25rem; justify-self: end; }
+.legend__signals .update-deadline-signal { flex-basis: 1.2rem; width: 1.2rem; min-width: 1.2rem; height: 1.2rem; min-height: 1.2rem; font-size: 0.55rem; }
 .update-dot { display: inline-block; width: 0.58rem; height: 0.58rem; margin-right: 0.25rem; border-radius: 50%; background: currentColor; vertical-align: middle; }
 .update-dot--healthy { color: #159b6b; }
 .update-dot--warning { color: #d39216; }
