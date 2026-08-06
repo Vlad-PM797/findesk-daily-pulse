@@ -1067,7 +1067,6 @@
       const heading = section?.querySelector('.section-heading');
       if (!section || !heading) return;
       section.classList.add('update-collapsible-section', 'is-collapsed');
-      section.querySelectorAll(':scope > *:not(.section-heading)').forEach((element) => { element.hidden = true; });
       let toggle = heading.querySelector('[data-update-section-toggle]');
       if (!toggle) {
         toggle = document.createElement('button');
@@ -1078,7 +1077,6 @@
         heading.append(toggle);
         toggle.addEventListener('click', () => {
           const collapsed = section.classList.toggle('is-collapsed');
-          section.querySelectorAll(':scope > *:not(.section-heading)').forEach((element) => { element.hidden = collapsed; });
           toggle.setAttribute('aria-expanded', String(!collapsed));
           toggle.title = `${collapsed ? 'Розгорнути' : 'Згорнути'}: ${label}`;
         });
