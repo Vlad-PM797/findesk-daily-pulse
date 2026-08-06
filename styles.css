@@ -459,6 +459,7 @@ h2 {
 }
 [data-view="dashboard"] .legend .legend__label,
 [data-view="dashboard"] .legend .legend__signals { width: auto; }
+[data-view="dashboard"] .chart-row { grid-template-rows: max-content; align-items: start; }
 
 .legend li {
   display: grid;
