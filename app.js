@@ -1072,11 +1072,7 @@
     const gradient = byDomain.map(([domain, items], index) => { const start = offset; offset += (items.length / total) * 100; return `${palette[index % palette.length]} ${start}% ${offset}%`; }).join(', ');
     chart.style.background = `conic-gradient(${gradient})`;
     chart.innerHTML = `<div><strong>${tasks.length}</strong><span>задач в апдейті</span></div>`;
-    legend.innerHTML = byDomain.map(([domain, items], index) => {
-      const developerSignal = deadlineSignal(items, 'developerDeadline');
-      const clientSignal = deadlineSignal(items, 'clientDeadline');
-      return `<li><span style="background:${palette[index % palette.length]}"></span><strong>${items.length}</strong><span class="legend__label">${escapeHtml(domain)}</span><span class="legend__signals" aria-label="Стани дедлайнів"><i class="update-deadline-signal update-deadline-signal--${developerSignal.key}" title="Апдейт розробника: ${escapeHtml(developerSignal.label)}"><b>Р</b></i><i class="update-deadline-signal update-deadline-signal--${clientSignal.key}" title="Апдейт замовника: ${escapeHtml(clientSignal.label)}"><b>З</b></i></span></li>`;
-    }).join('');
+    legend.innerHTML = byDomain.map(([domain, items], index) => `<li><span style="background:${palette[index % palette.length]}"></span><strong>${items.length}</strong>${escapeHtml(domain)}</li>`).join('');
 
     const people = [...new Map(tasks.flatMap((task) => task.developer.split(',').map((developer) => developer.trim()).filter((developer) => developer.startsWith('@')).map((developer) => [developer, tasks.filter((item) => item.developer.includes(developer))]))).entries()];
     const peopleContainer = document.getElementById('people-bars');

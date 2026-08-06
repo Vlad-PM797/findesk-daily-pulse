@@ -1370,6 +1370,8 @@ h2 {
 .legend li > strong { flex: 0 0 1.35rem; }
 .legend .legend__label { flex: 1 1 auto; }
 .legend .legend__signals { flex: 0 0 auto; }
+.legend li,
+[data-view="dashboard"] .legend li { display: grid; grid-template-columns: 0.62rem 1.35rem minmax(0, 1fr); gap: 0.35rem; align-items: center; min-height: 1.6rem; height: auto; }
 .update-dot { display: inline-block; width: 0.58rem; height: 0.58rem; margin-right: 0.25rem; border-radius: 50%; background: currentColor; vertical-align: middle; }
 .update-dot--healthy { color: #159b6b; }
 .update-dot--warning { color: #d39216; }
