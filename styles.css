@@ -1351,7 +1351,7 @@ h2 {
 .update-task-level .map-level__body { padding: 0; }
 .update-task-table--map { min-width: 70rem; border: 0; }
 .update-deadline-signals { display: inline-flex; align-items: center; gap: 0.35rem; margin-left: 0.35rem; }
-.update-deadline-signal { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; border: 2px solid currentColor; border-radius: 50%; font-style: normal; font-size: 0.62rem; line-height: 1; }
+.update-deadline-signal { display: inline-grid; place-items: center; flex: 0 0 1.45rem; width: 1.45rem; min-width: 1.45rem; height: 1.45rem; min-height: 1.45rem; aspect-ratio: 1 / 1; border: 2px solid currentColor; border-radius: 50%; font-style: normal; font-size: 0.62rem; line-height: 1; }
 .update-deadline-signal--healthy { color: #159b6b; background: #dff6ec; }
 .update-deadline-signal--warning { color: #a76a00; background: #fff0bd; }
 .update-deadline-signal--overdue { color: #c83c54; background: #ffe2e7; }
