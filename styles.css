@@ -1370,6 +1370,18 @@ h2 {
 .update-task-card--healthy small { color: #08704b; }
 .update-task-card--warning small { color: #9b6500; }
 .update-task-card--overdue small { color: #b3324b; }
+.update-risk-item { border: 1px solid var(--line); border-left: 4px solid var(--risk-color, var(--muted)); background: var(--surface); }
+.update-risk-item--warning { --risk-color: #d39216; }
+.update-risk-item--overdue { --risk-color: #d4475d; }
+.update-risk-item summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.55rem; min-height: 3.2rem; padding: 0.65rem 0.75rem; color: var(--ink); cursor: pointer; list-style: none; }
+.update-risk-item summary::-webkit-details-marker { display: none; }
+.update-risk-item summary::after { content: '›'; color: var(--muted); font-size: 1.25rem; transition: transform 160ms ease; }
+.update-risk-item[open] summary::after { transform: rotate(90deg); }
+.update-risk-item summary strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.86rem; }
+.update-risk-item summary em { color: var(--risk-color); font-size: 0.76rem; font-style: normal; font-weight: 800; white-space: nowrap; }
+.update-risk-item__dot { width: 0.58rem; height: 0.58rem; border-radius: 50%; background: var(--risk-color); }
+.update-risk-item__detail { border-top: 1px solid var(--line); padding: 0.7rem 0.85rem; color: var(--muted); font-size: 0.8rem; }
+.update-risk-item__detail p { margin: 0.3rem 0 0; }
 .status-pill--healthy { --status-color: #08704b; }
 .status-pill--warning { --status-color: #9b6500; }
 .status-pill--overdue { --status-color: #b3324b; }

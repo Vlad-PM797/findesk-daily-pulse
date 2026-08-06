@@ -1079,7 +1079,10 @@
     peopleContainer.innerHTML = people.length ? people.map(([developer, items]) => `<div class="person-row"><div><strong>${escapeHtml(developer)}</strong><span>${items.length} задач в роботі</span></div><div class="person-meter"><span style="width:${Math.round((items.length / Math.max(tasks.length, 1)) * 100)}%"></span></div></div>`).join('') : '<p class="empty">Розробники не вказані.</p>';
 
     const risks = [...stats.overdue, ...stats.warning];
-    document.getElementById('risk-list').innerHTML = risks.length ? risks.map((task) => `<article class="has-popover" tabindex="0"><span></span><p>${escapeHtml(task.title)} · ${escapeHtml(taskDeadlineState(task).label)}</p></article>`).join('') : '<p class="empty">Протермінованих або критичних дедлайнів немає.</p>';
+    document.getElementById('risk-list').innerHTML = risks.length ? risks.map((task) => {
+      const state = taskDeadlineState(task);
+      return `<details class="update-risk-item update-risk-item--${state.key}"><summary><span class="update-risk-item__dot" aria-hidden="true"></span><strong>${escapeHtml(task.title)}</strong><em>${escapeHtml(state.label)}</em></summary><div class="update-risk-item__detail"><span>${escapeHtml(task.domain)}</span><p>${escapeHtml(task.status)}</p></div></details>`;
+    }).join('') : '<p class="empty">Протермінованих або критичних дедлайнів немає.</p>';
     document.querySelectorAll('[data-tab]').forEach((button) => { button.textContent = { done: 'Всі задачі', active: 'В роботі', review: 'Дедлайни та питання' }[button.dataset.tab] || button.textContent; });
     const list = document.getElementById('task-list');
     const renderTab = (tab = 'done') => {
