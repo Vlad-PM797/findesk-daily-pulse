@@ -1386,6 +1386,14 @@ h2 {
 .update-task-card--healthy small { color: #08704b; }
 .update-task-card--warning small { color: #9b6500; }
 .update-task-card--overdue small { color: #b3324b; }
+.update-task-card summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.65rem; min-height: 3.1rem; padding: 0.65rem 0.75rem; cursor: pointer; list-style: none; }
+.update-task-card summary::-webkit-details-marker { display: none; }
+.update-task-card summary::after { content: '›'; color: var(--muted); font-size: 1.2rem; transition: transform 160ms ease; }
+.update-task-card[open] summary::after { transform: rotate(90deg); }
+.update-task-card summary strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.update-task-card summary small { white-space: nowrap; }
+.update-task-card__detail { border-top: 1px solid var(--line); padding: 0.65rem 0.75rem; color: var(--muted); font-size: 0.8rem; }
+.update-task-card__detail p { margin: 0.3rem 0 0; }
 .update-risk-item { border: 1px solid var(--line); border-left: 4px solid var(--risk-color, var(--muted)); background: var(--surface); }
 .update-risk-item--warning { --risk-color: #d39216; }
 .update-risk-item--overdue { --risk-color: #d4475d; }

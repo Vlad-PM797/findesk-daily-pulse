@@ -1043,7 +1043,7 @@
 
   function updateTaskLine(task) {
     const state = taskDeadlineState(task);
-    return `<article class="update-task-card update-task-card--${state.key}"><strong>${escapeHtml(task.title)}</strong><span>${escapeHtml(task.domain)}</span><small>${escapeHtml(state.label)} · ${escapeHtml(task.status)}</small></article>`;
+    return `<details class="update-task-card update-task-card--${state.key}"><summary><strong>${escapeHtml(task.title)}</strong><small>${escapeHtml(state.label)}</small></summary><div class="update-task-card__detail"><span>${escapeHtml(task.domain)}</span><p>${escapeHtml(task.status)}</p><p>${escapeHtml(task.developer)} · ${escapeHtml(task.client)}</p></div></details>`;
   }
 
   function renderUpdateDashboard(report) {
