@@ -1409,10 +1409,10 @@ h2 {
 .update-collapsible-section .section-heading { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0; }
 .update-collapsible-section.is-collapsed > *:not(.section-heading) { display: none !important; }
 .update-collapsible-section .section-heading > :not(.section-collapse-toggle) { flex: 0 1 auto; }
-.section-collapse-toggle { display: grid; place-items: center; flex: 0 0 2rem; width: 2rem; height: 2rem; margin-left: auto; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: var(--surface); cursor: pointer; font: inherit; }
-.section-collapse-toggle::before { content: '⌄'; font-size: 1.1rem; line-height: 1; transition: transform 160ms ease; }
+.section-collapse-toggle { display: grid; place-items: center; flex: 0 0 2.45rem; width: 2.45rem; height: 2.45rem; margin-left: auto; border: 2px solid var(--ink); border-radius: 50%; color: var(--surface); background: var(--ink); box-shadow: 0 2px 0 rgba(16, 32, 28, 0.18); cursor: pointer; font: inherit; transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease; }
+.section-collapse-toggle::before { content: '⌄'; font-size: 1.35rem; font-weight: 900; line-height: 1; transition: transform 160ms ease; }
 .update-collapsible-section.is-collapsed .section-collapse-toggle::before { transform: rotate(-90deg); }
-.section-collapse-toggle:hover, .section-collapse-toggle:focus-visible { border-color: var(--accent); color: var(--accent); }
+.section-collapse-toggle:hover, .section-collapse-toggle:focus-visible { border-color: var(--accent); color: var(--surface); background: var(--accent); transform: scale(1.05); }
 .status-pill--healthy { --status-color: #08704b; }
 .status-pill--warning { --status-color: #9b6500; }
 .status-pill--overdue { --status-color: #b3324b; }
