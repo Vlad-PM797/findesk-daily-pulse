@@ -457,6 +457,8 @@ h2 {
 [data-view="dashboard"] .legend span {
   width: 0.62rem;
 }
+[data-view="dashboard"] .legend .legend__label,
+[data-view="dashboard"] .legend .legend__signals { width: auto; }
 
 .legend li {
   display: grid;
