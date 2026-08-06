@@ -1364,6 +1364,12 @@ h2 {
 .legend .legend__signals { display: inline-flex; align-items: center; gap: 0.25rem; justify-self: end; width: auto; }
 .legend__signals .update-deadline-signal { flex-basis: 1.2rem; width: 1.2rem; min-width: 1.2rem; height: 1.2rem; min-height: 1.2rem; font-size: 0.55rem; }
 .legend { align-self: start; align-content: start; height: max-content; grid-auto-rows: minmax(1.6rem, auto); }
+.legend li,
+[data-view="dashboard"] .legend li { display: flex; align-items: center; min-height: 1.6rem; height: auto; }
+.legend li > span:first-child { flex: 0 0 0.62rem; width: 0.62rem; }
+.legend li > strong { flex: 0 0 1.35rem; }
+.legend .legend__label { flex: 1 1 auto; }
+.legend .legend__signals { flex: 0 0 auto; }
 .update-dot { display: inline-block; width: 0.58rem; height: 0.58rem; margin-right: 0.25rem; border-radius: 50%; background: currentColor; vertical-align: middle; }
 .update-dot--healthy { color: #159b6b; }
 .update-dot--warning { color: #d39216; }
