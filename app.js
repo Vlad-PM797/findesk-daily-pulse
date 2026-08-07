@@ -1253,6 +1253,35 @@
     }));
   }
 
+  function renderClassicProfile(report) {
+    const root = document.querySelector('[data-profile-panel="classic"]');
+    if (!root) return;
+    const tasks = report.updateTasks || [];
+    const updateOnly = Boolean(tasks.length && !report.kpis.worksectionClosed && !report.kpis.githubClosedPr && !report.kpis.activeProductTasks);
+    const classicLabels = root.querySelectorAll('.classic-kpi > span');
+    const classicValues = updateOnly ? { worksection: tasks.length, github: new Set(tasks.flatMap((task) => task.developer.split(',').map((value) => value.trim()).filter((value) => value.startsWith('@')))).size, active: tasks.length, review: tasks.filter((task) => task.status.includes('фідбек')).length } : { worksection: report.kpis.worksectionClosed, github: report.kpis.githubClosedPr, active: report.kpis.activeProductTasks, review: report.kpis.openReviewPr };
+    if (updateOnly) {
+      classicLabels[0].textContent = 'Задач в апдейті';
+      classicLabels[1].textContent = 'Виконавці';
+      classicLabels[2].textContent = 'Задач в роботі';
+      classicLabels[3].textContent = 'Без фідбеку';
+    }
+    setText('classic-worksection', classicValues.worksection);
+    setText('classic-worksection-note', updateOnly ? `${new Set(tasks.map((task) => task.domain)).size} функціональних блоків` : `${report.kpis.worksectionMeaningful} змістовних · ${report.kpis.worksectionService} службових`);
+    setText('classic-github', classicValues.github);
+    setText('classic-github-note', updateOnly ? 'вказані у поточному апдейті' : `${report.kpis.githubDenysPr} Denys-devit · ${report.kpis.githubKiraPr} batalova-kira`);
+    setText('classic-active', classicValues.active);
+    setText('classic-review', classicValues.review);
+    const maxStage = Math.max(...(report.stages || []).map((stage) => stage.value), 1);
+    document.getElementById('classic-stages').innerHTML = (report.stages || []).map((stage) => `<div class="classic-stage"><div><strong>${escapeHtml(stage.label)}</strong><span>${escapeHtml(stage.valueText)}</span></div><i><b style="width:${Math.round((stage.value / maxStage) * 100)}%"></b></i></div>`).join('') || '<p class="empty">Немає даних про стадії.</p>';
+    const groups = [...new Map(tasks.map((task) => [task.domain || 'Без блоку', tasks.filter((item) => (item.domain || 'Без блоку') === (task.domain || 'Без блоку'))])).values()];
+    document.getElementById('classic-blocks').innerHTML = groups.map((items) => `<div class="classic-block"><span>${escapeHtml(items[0].domain || 'Без блоку')}</span><strong>${items.length}</strong></div>`).join('') || '<p class="empty">Немає задач.</p>';
+    const people = [...new Set(tasks.flatMap((task) => task.developer.split(',').map((value) => value.trim())).filter((value) => value && value !== 'не вказано'))];
+    document.getElementById('classic-people').innerHTML = people.map((person) => `<div class="classic-person"><span>${escapeHtml(person)}</span><strong>${tasks.filter((task) => task.developer.split(',').map((value) => value.trim()).includes(person)).length}</strong></div>`).join('') || '<p class="empty">Виконавців не вказано.</p>';
+    const risks = [...new Set([...(report.risks || []), ...tasks.filter((task) => /помил|баг|зауваж|не встиг|питання/i.test(`${task.title} ${task.status}`)).map((task) => task.title)])];
+    document.getElementById('classic-risks').innerHTML = risks.map((risk) => `<p>${escapeHtml(risk)}</p>`).join('') || '<p class="empty">Критичних ризиків не зафіксовано.</p>';
+  }
+
   function renderClientTwoProfile(report) {
     const root = document.querySelector('[data-profile-panel="client-two"]');
     if (!root) return;
@@ -1311,7 +1340,7 @@
   }
 
   function activateProfile(profileName) {
-    const profile = profileName === 'client-two' ? 'client-two' : 'operational';
+    const profile = ['client-two', 'classic'].includes(profileName) ? profileName : 'operational';
     document.querySelectorAll('.profile-button').forEach((button) => {
       const active = button.dataset.profileTarget === profile;
       button.classList.toggle('is-active', active);
@@ -1468,6 +1497,7 @@
     }
     renderUpdateTasks(report);
     if (updateOnly) renderUpdateMode(report);
+    renderClassicProfile(report);
     renderClientTwoProfile(report);
     attachPopovers();
   }

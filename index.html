@@ -59,6 +59,7 @@
         <span class="profile-switcher__label">Профіль:</span>
         <button class="profile-button is-active" type="button" data-profile-target="operational" aria-pressed="true">Операційний</button>
         <button class="profile-button" type="button" data-profile-target="client-two" aria-pressed="false">Замовник 2</button>
+        <button class="profile-button" type="button" data-profile-target="classic" aria-pressed="false">Класичний</button>
       </div>
     </header>
 
@@ -105,6 +106,22 @@
       <div id="task-list" class="task-list"></div>
     </section>
     </div>
+
+    <section class="profile-panel classic-profile-panel" data-profile-panel="classic" aria-labelledby="classic-title" hidden>
+      <div class="section-heading"><p class="eyebrow">Класичний огляд</p><h2 id="classic-title">Findesk — загальний стан проєкту</h2></div>
+      <div class="classic-kpi-grid" aria-label="Ключові показники класичного огляду">
+        <article class="classic-kpi classic-kpi--green"><span>Worksection закрито</span><strong id="classic-worksection">0</strong><small id="classic-worksection-note"></small></article>
+        <article class="classic-kpi classic-kpi--blue"><span>GitHub PR закрито</span><strong id="classic-github">0</strong><small id="classic-github-note"></small></article>
+        <article class="classic-kpi classic-kpi--amber"><span>В роботі</span><strong id="classic-active">0</strong><small>продуктових задач</small></article>
+        <article class="classic-kpi classic-kpi--red"><span>Code Review</span><strong id="classic-review">0</strong><small>відкриті PR</small></article>
+      </div>
+      <div class="classic-layout">
+        <article class="classic-panel"><div class="section-heading"><p class="eyebrow">Операційна картина</p><h3>Стадії проєкту</h3></div><div id="classic-stages" class="classic-stages"></div></article>
+        <article class="classic-panel"><div class="section-heading"><p class="eyebrow">Розподіл</p><h3>Задачі за функціональними блоками</h3></div><div id="classic-blocks" class="classic-blocks"></div></article>
+        <article class="classic-panel"><div class="section-heading"><p class="eyebrow">Відповідальні</p><h3>Задачі за виконавцями</h3></div><div id="classic-people" class="classic-people"></div></article>
+        <article class="classic-panel classic-panel--wide"><div class="section-heading"><p class="eyebrow">Фокус</p><h3>Ризики та хвости</h3></div><div id="classic-risks" class="classic-risks"></div></article>
+      </div>
+    </section>
 
     <section class="profile-panel client-profile-panel" data-profile-panel="client-two" aria-labelledby="client-two-title" hidden>
       <div class="section-heading">
