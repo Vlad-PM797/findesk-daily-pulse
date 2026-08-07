@@ -1364,7 +1364,6 @@
       document.querySelector('.metric--review')?.insertAdjacentHTML('beforeend', insightButton(insights.kpis.review.title, insights.kpis.review.body));
     }
 
-    renderBars(document.getElementById('stage-bars'), report.stages, Math.max(...report.stages.map((item) => item.value), 1));
     renderDonut(report);
     renderPeople(report);
     renderRisks(report);
