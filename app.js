@@ -1436,13 +1436,22 @@
       });
 
       try {
-        const [reportResponse, structureResponse] = await Promise.all([
-          fetch('reports/current.md', { cache: 'no-store' }),
-          fetch('api/project-structure', { cache: 'no-store' })
-        ]);
+        const reportResponse = await fetch('reports/current.md', { cache: 'no-store' });
         if (!reportResponse.ok) throw new Error(`HTTP ${reportResponse.status}`);
         const markdown = await reportResponse.text();
-        const structurePayload = structureResponse.ok ? await structureResponse.json() : null;
+        let structurePayload = null;
+        try {
+          const structureResponse = await fetch('api/project-structure', { cache: 'no-store' });
+          structurePayload = structureResponse.ok ? await structureResponse.json() : null;
+        } catch {
+          structurePayload = null;
+        }
+        if (!structurePayload?.markdown) {
+          const fallbackResponse = await fetch('data/project-structure.md', { cache: 'no-store' });
+          if (fallbackResponse.ok) {
+            structurePayload = { source: 'static fallback', stale: true, markdown: await fallbackResponse.text() };
+          }
+        }
         const report = parseDailyReport(markdown);
         window.currentDailyReport = report;
         renderReport(report, structurePayload);
