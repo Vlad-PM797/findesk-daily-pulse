@@ -55,6 +55,11 @@
       <button class="view-button" type="button" data-view-target="kanban">Kanban</button>
       <button class="view-button" type="button" data-view-target="executive">Executive</button>
       </nav>
+      <div class="profile-switcher" role="group" aria-label="Профіль перегляду">
+        <span class="profile-switcher__label">Профіль:</span>
+        <button class="profile-button is-active" type="button" data-profile-target="operational" aria-pressed="true">Операційний</button>
+        <button class="profile-button" type="button" data-profile-target="client-two" aria-pressed="false">Замовник 2</button>
+      </div>
     </header>
 
     <div class="view-panel" data-view="dashboard">
@@ -100,6 +105,29 @@
       <div id="task-list" class="task-list"></div>
     </section>
     </div>
+
+    <section class="profile-panel client-profile-panel" data-profile-panel="client-two" aria-labelledby="client-two-title" hidden>
+      <div class="section-heading">
+        <p class="eyebrow">Профіль замовника 2</p>
+        <h2 id="client-two-title">Стан проєкту та функціональні блоки</h2>
+        <p class="section-description">Загальна картина роботи, задачі за блоками, виконавці, статуси та планові терміни.</p>
+      </div>
+      <div class="client-summary-grid" aria-label="Загальний стан проєкту">
+        <article class="client-summary-card client-summary-card--total"><span>Усього задач</span><strong id="client-two-total">0</strong><small>у поточному апдейті</small></article>
+        <article class="client-summary-card client-summary-card--bugs"><span>Баги та помилки</span><strong id="client-two-bugs">0</strong><small>виправлення й зауваження</small></article>
+        <article class="client-summary-card client-summary-card--enhancements"><span>Допрацювання</span><strong id="client-two-enhancements">0</strong><small>розвиток наявного функціоналу</small></article>
+        <article class="client-summary-card client-summary-card--new"><span>Нова розробка</span><strong id="client-two-new">0</strong><small>нові функціональні задачі</small></article>
+      </div>
+      <div class="client-profile-toolbar" role="toolbar" aria-label="Фільтри профілю замовника 2">
+        <label class="client-filter"><span>Пошук</span><input id="client-two-search" type="search" placeholder="Назва задачі або опис"></label>
+        <label class="client-filter"><span>Функціональний блок</span><select id="client-two-block-filter"><option value="">Всі блоки</option></select></label>
+        <label class="client-filter"><span>Виконавець</span><select id="client-two-developer-filter"><option value="">Всі виконавці</option></select></label>
+        <label class="client-filter"><span>Статус</span><select id="client-two-status-filter"><option value="">Всі статуси</option></select></label>
+        <label class="client-filter"><span>Тип роботи</span><select id="client-two-type-filter"><option value="">Всі типи</option></select></label>
+      </div>
+      <p id="client-two-filter-summary" class="client-filter-summary"></p>
+      <div id="client-two-blocks" class="client-block-list"></div>
+    </section>
 
     <section class="view-panel modules-view" data-view="modules" aria-labelledby="modules-view-title">
       <div class="section-heading">
@@ -194,6 +222,6 @@
     </section>
   </main>
 
-    <script src="app.js?v=20260807-collapse-attention"></script>
+    <script src="app.js?v=20260807-client-two-profile"></script>
 </body>
 </html>

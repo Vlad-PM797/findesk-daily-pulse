@@ -354,6 +354,22 @@
     return date ? `Оновлення ${date[1]}` : 'Оновлення';
   }
 
+  function extractTaskDuration(text) {
+    const match = String(text || '').match(/(\d+(?:[.,]\d+)?)\s*(год(?:ини|ин)?|дн(?:і|ів|і)?|день)/i);
+    return match ? `${match[1].replace(',', '.')} ${match[2]}` : 'не вказано';
+  }
+
+  function classifyTaskType(task) {
+    const text = `${task.title} ${task.status}`.toLowerCase();
+    if (/(баг|помил|зауваж|виправлен|bug)/i.test(text)) return 'bug';
+    if (/(доопрац|підтрим|наповнен|опис |аналіз|погоджен|тестуван|модерац|інтеграц)/i.test(text)) return 'enhancement';
+    return 'new';
+  }
+
+  function taskTypeLabel(type) {
+    return { bug: 'Баги та помилки', enhancement: 'Допрацювання', new: 'Нова розробка' }[type] || 'Нова розробка';
+  }
+
   function parseUpdateTasks(markdown) {
     let start = markdown.search(/^#{1,2}\s+Оновлення[^\n]*$/im);
     if (start < 0) start = markdown.search(/^\s*={3,10}\s+.+$/m);
@@ -388,7 +404,7 @@
       const parts = raw.includes('|') ? raw.split('|').map((part) => part.trim()).filter(Boolean) : [raw];
       const naturalText = parts[0] || '';
       const title = naturalText.split(/\s+(?:[-—]\s+)?(?=@|дедлайн|(?:Андрій|Віталій|Віталик|Олександр|Денис|Кіра|Кирило)\b)/i)[0].trim();
-      const fields = { title: stripMarkdown(title).replace(/https?:\/\/\S+/gi, '').trim(), domain, developer: 'не вказано', client: 'не вказано', developerDeadline: 'не вказано', clientDeadline: 'не вказано', status: 'не вказано' };
+      const fields = { title: stripMarkdown(title).replace(/https?:\/\/\S+/gi, '').trim(), domain, developer: 'не вказано', client: 'не вказано', developerDeadline: 'не вказано', clientDeadline: 'не вказано', duration: 'не вказано', status: 'не вказано' };
       const mentions = [...naturalText.matchAll(/@[A-Za-z][A-Za-z0-9_-]*/g)].map((match) => match[0]);
       if (mentions.length) fields.developer = [...new Set(mentions)].join(', ');
       parts.forEach((part) => {
@@ -400,12 +416,14 @@
         if (key === 'замовник') fields.client = value;
         if (key === 'дедлайн розробника') fields.developerDeadline = value;
         if (key === 'дедлайн замовника') fields.clientDeadline = value;
+        if (key === 'термін' || key === 'тривалість' || key === 'оцінка' || key === 'плановий термін') fields.duration = value;
         if (key === 'статус') fields.status = value;
       });
       if (parts.length === 1) {
         const datePattern = '(\\d{1,2}\\.\\d{1,2}\\.(?:\\d{2,4})?)';
         const developerDeadline = naturalText.match(new RegExp(`дедлайн(?:\\s+(?:розробника|виконавця))?\\s+${datePattern}`, 'i'));
         if (developerDeadline) fields.developerDeadline = developerDeadline[1];
+        fields.duration = extractTaskDuration(naturalText);
         const personPattern = /(?:Андрій|Віталій|Віталик|Олександр|Денис|Кіра|Кирило)(?:\s+[А-ЯІЇЄҐ][а-яіїєґ]+){1,2}/gi;
         const clients = [...naturalText.matchAll(personPattern)];
         if (clients.length) {
@@ -422,7 +440,7 @@
         else if (/не\s+встиг/i.test(naturalText)) fields.status = 'не встиг';
         else if (/статус\s*\?/i.test(naturalText)) fields.status = 'не визначено';
       }
-      if (fields.title) tasks.push(fields);
+      if (fields.title) tasks.push({ ...fields, type: classifyTaskType(fields) });
       return tasks;
     }, []);
   }
@@ -1235,6 +1253,75 @@
     }));
   }
 
+  function renderClientTwoProfile(report) {
+    const root = document.querySelector('[data-profile-panel="client-two"]');
+    if (!root) return;
+    const tasks = (report.updateTasks || []).map((task) => ({ ...task, type: task.type || classifyTaskType(task) }));
+    const controls = {
+      search: document.getElementById('client-two-search'),
+      block: document.getElementById('client-two-block-filter'),
+      developer: document.getElementById('client-two-developer-filter'),
+      status: document.getElementById('client-two-status-filter'),
+      type: document.getElementById('client-two-type-filter')
+    };
+    const addOptions = (select, values, emptyLabel) => {
+      if (!select || select.dataset.ready) return;
+      select.innerHTML = `<option value="">${emptyLabel}</option>${values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('')}`;
+      select.dataset.ready = 'true';
+    };
+    addOptions(controls.block, [...new Set(tasks.map((task) => task.domain).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk')), 'Всі блоки');
+    addOptions(controls.developer, [...new Set(tasks.flatMap((task) => task.developer.split(',').map((value) => value.trim())).filter((value) => value && value !== 'не вказано'))].sort(), 'Всі виконавці');
+    addOptions(controls.status, [...new Set(tasks.map((task) => task.status).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk')), 'Всі статуси');
+    addOptions(controls.type, ['bug', 'enhancement', 'new'], 'Всі типи');
+    if (controls.type && !controls.type.dataset.labelsReady) {
+      [...controls.type.options].forEach((option) => { if (option.value) option.textContent = taskTypeLabel(option.value); });
+      controls.type.dataset.labelsReady = 'true';
+    }
+    const render = () => {
+      const query = controls.search?.value.trim().toLowerCase() || '';
+      const filtered = tasks.filter((task) => {
+        const haystack = [task.title, task.domain, task.status, task.developer, task.client].join(' ').toLowerCase();
+        return (!query || haystack.includes(query))
+          && (!controls.block?.value || task.domain === controls.block.value)
+          && (!controls.developer?.value || task.developer.split(',').map((value) => value.trim()).includes(controls.developer.value))
+          && (!controls.status?.value || task.status === controls.status.value)
+          && (!controls.type?.value || task.type === controls.type.value);
+      });
+      const countByType = (type) => filtered.filter((task) => task.type === type).length;
+      setText('client-two-total', filtered.length);
+      setText('client-two-bugs', countByType('bug'));
+      setText('client-two-enhancements', countByType('enhancement'));
+      setText('client-two-new', countByType('new'));
+      setText('client-two-filter-summary', filtered.length === tasks.length ? `${tasks.length} задач у поточному апдейті` : `Показано ${filtered.length} із ${tasks.length} задач`);
+      const groups = [...new Map(filtered.map((task) => [task.domain || 'Без блоку', null])).keys()].map((domain) => ({ domain, tasks: filtered.filter((task) => (task.domain || 'Без блоку') === domain) }));
+      const blocks = document.getElementById('client-two-blocks');
+      if (!blocks) return;
+      blocks.innerHTML = groups.map((group) => `<details class="client-block"><summary><span>${escapeHtml(group.domain)}</span><strong>${group.tasks.length}</strong></summary><div class="client-task-list">${group.tasks.map((task) => {
+        const state = taskDeadlineState(task);
+        const plannedDate = task.clientDeadline !== 'не вказано' ? task.clientDeadline : task.developerDeadline;
+        return `<article class="client-task client-task--${state.key}"><div class="client-task__title"><strong>${escapeHtml(task.title)}</strong><span class="client-type client-type--${task.type}">${escapeHtml(taskTypeLabel(task.type))}</span></div><div class="client-task__facts"><span><b>Статус</b>${escapeHtml(task.status)}</span><span><b>Виконавці</b>${escapeHtml(task.developer)}</span><span><b>Термін</b>${escapeHtml(task.duration)}</span><span><b>Планова дата</b>${escapeHtml(plannedDate)}</span><span><b>Замовники</b>${escapeHtml(task.client)}</span></div></article>`;
+      }).join('')}</div></details>`).join('') || '<p class="empty">За вибраними параметрами задач не знайдено.</p>';
+    };
+    if (!root.dataset.bound) {
+      controls.search?.addEventListener('input', render);
+      [controls.block, controls.developer, controls.status, controls.type].forEach((control) => control?.addEventListener('change', render));
+      root.dataset.bound = 'true';
+    }
+    render();
+  }
+
+  function activateProfile(profileName) {
+    const profile = profileName === 'client-two' ? 'client-two' : 'operational';
+    document.querySelectorAll('.profile-button').forEach((button) => {
+      const active = button.dataset.profileTarget === profile;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    document.querySelectorAll('.view-panel').forEach((panel) => { panel.hidden = profile === 'client-two'; });
+    document.querySelectorAll('[data-profile-panel]').forEach((panel) => { panel.hidden = panel.dataset.profilePanel !== profile; });
+    try { window.localStorage.setItem('findesk-profile', profile); } catch (error) { /* preference is optional */ }
+  }
+
   function renderArchitecture(model) {
     window.currentArchitecture = model;
     window.architectureFilter = 'all';
@@ -1381,6 +1468,7 @@
     }
     renderUpdateTasks(report);
     if (updateOnly) renderUpdateMode(report);
+    renderClientTwoProfile(report);
     attachPopovers();
   }
 
@@ -1426,8 +1514,16 @@
         });
       });
       document.querySelectorAll('.view-button').forEach((button) => {
-        button.addEventListener('click', () => activateView(button.dataset.viewTarget));
+        button.addEventListener('click', () => { activateProfile('operational'); activateView(button.dataset.viewTarget); });
       });
+      document.querySelectorAll('.profile-button').forEach((button) => {
+        button.addEventListener('click', () => activateProfile(button.dataset.profileTarget));
+      });
+      let initialProfile = new URLSearchParams(window.location.search).get('profile');
+      if (!initialProfile) {
+        try { initialProfile = window.localStorage.getItem('findesk-profile'); } catch (error) { initialProfile = null; }
+      }
+      activateProfile(initialProfile || 'operational');
       document.querySelectorAll('.theme-button').forEach((button) => {
         button.addEventListener('click', () => setTheme(button.dataset.themeValue));
       });
