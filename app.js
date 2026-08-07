@@ -1346,8 +1346,10 @@
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-pressed', String(active));
     });
-    document.querySelectorAll('.view-panel').forEach((panel) => { panel.hidden = profile === 'client-two'; });
+    document.querySelectorAll('.view-panel').forEach((panel) => { panel.hidden = profile !== 'operational'; });
     document.querySelectorAll('[data-profile-panel]').forEach((panel) => { panel.hidden = panel.dataset.profilePanel !== profile; });
+    const sourceStatus = window.profileSourceStatus?.[profile];
+    if (sourceStatus) setText('source-status', sourceStatus);
     try { window.localStorage.setItem('findesk-profile', profile); } catch (error) { /* preference is optional */ }
   }
 
@@ -1497,8 +1499,6 @@
     }
     renderUpdateTasks(report);
     if (updateOnly) renderUpdateMode(report);
-    renderClassicProfile(report);
-    renderClientTwoProfile(report);
     attachPopovers();
   }
 
@@ -1565,6 +1565,17 @@
         const reportResponse = await fetch('reports/current.md', { cache: 'no-store' });
         if (!reportResponse.ok) throw new Error(`HTTP ${reportResponse.status}`);
         const markdown = await reportResponse.text();
+        let classicReport = null;
+        let classicSourceStatus = 'reports/current-3.md не знайдено';
+        try {
+          const classicResponse = await fetch('reports/current-3.md', { cache: 'no-store' });
+          if (classicResponse.ok) {
+            classicReport = parseDailyReport(await classicResponse.text());
+            classicSourceStatus = 'reports/current-3.md підключено';
+          }
+        } catch (classicError) {
+          console.warn('Classic profile source is unavailable.', classicError);
+        }
         let structurePayload = null;
         try {
           const structureResponse = await fetch('api/project-structure', { cache: 'no-store' });
@@ -1579,8 +1590,22 @@
           }
         }
         const report = parseDailyReport(markdown);
+        classicReport ||= report;
+        window.profileSourceStatus = {
+          operational: 'reports/current.md підключено',
+          'client-two': 'reports/current.md підключено',
+          classic: classicSourceStatus
+        };
+        window.profileReports = {
+          operational: report,
+          'client-two': report,
+          classic: classicReport
+        };
         window.currentDailyReport = report;
         renderReport(report, structurePayload);
+        renderClassicProfile(classicReport);
+        renderClientTwoProfile(report);
+        activateProfile(initialProfile || 'operational');
       } catch (error) {
         showError(error);
       }
