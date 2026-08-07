@@ -1075,6 +1075,7 @@
       }
       toggle.setAttribute('aria-expanded', 'false');
     };
+    configureCollapsedSection('[aria-labelledby="risk-title"]', 'Що потребує уваги');
     configureCollapsedSection('[aria-labelledby="tasks-title"]', 'Задачі апдейту');
 
     const palette = ['#13a884', '#4f7cff', '#f0a536', '#d95f76', '#7c5cff', '#1d9aaa', '#6b7280'];
