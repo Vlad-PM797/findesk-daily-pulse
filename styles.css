@@ -239,6 +239,11 @@ h2 {
 .client-structure-block li span { min-width: 0; }
 .client-structure-block li strong { display: block; color: var(--ink); font-size: 0.8rem; }
 .client-structure-children { display: block; margin-top: 0.2rem; color: var(--muted); font-size: 0.72rem; line-height: 1.35; }
+.client-service-tasks { margin-top: 0.45rem; border-left: 0.18rem solid var(--client-structure-accent); background: color-mix(in srgb, var(--client-structure-accent) 6%, var(--surface)); }
+.client-service-tasks summary { padding: 0.3rem 0.45rem; color: var(--client-structure-accent); cursor: pointer; font-size: 0.72rem; font-weight: 800; }
+.client-service-tasks > div { display: grid; gap: 0.35rem; padding: 0 0.45rem 0.4rem; }
+.client-service-tasks p { margin: 0; color: var(--ink); font-size: 0.72rem; line-height: 1.3; }
+.client-service-tasks p small { display: block; color: var(--muted); font-size: 0.68rem; }
 .client-structure-remove { flex: 0 0 auto; color: var(--muted); }
 .client-structure-remove:hover, .client-structure-remove:focus-visible { color: var(--red); border-color: var(--red); }
 .client-block-list { display: grid; gap: 0.55rem; }

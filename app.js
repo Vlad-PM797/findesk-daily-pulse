@@ -1377,12 +1377,12 @@
     if (!reportStructure?.length) return savedStructure;
     const structure = reportStructure.map((block) => ({ ...block, services: (block.services || []).map((service) => typeof service === 'string' ? service : ({ ...service, children: [...(service.children || [])], tasks: [...(service.tasks || [])] })) }));
     const reportBlockNames = new Set(structure.map((block) => block.name));
-    savedStructure.forEach((savedBlock) => {
+    savedStructure.filter((savedBlock) => savedBlock.source === 'manual').forEach((savedBlock) => {
       if (!reportBlockNames.has(savedBlock.name)) structure.push({ ...savedBlock, services: [...(savedBlock.services || [])] });
       else {
         const target = structure.find((item) => item.name === savedBlock.name);
-        const known = new Set((target.services || []).map((item) => typeof item === 'string' ? item : item.name));
-        (savedBlock.services || []).forEach((item) => { const name = typeof item === 'string' ? item : item.name; if (!known.has(name)) target.services.push(item); });
+        const manualServices = (savedBlock.services || []).filter((item) => typeof item === 'object' && item.source === 'manual');
+        target.services.push(...manualServices);
       }
     });
     return structure;
@@ -1407,7 +1407,8 @@
     const parent = document.getElementById('client-two-structure-parent');
     if (!container || !parent) return;
     parent.innerHTML = '<option value="">Новий основний блок</option>' + structure.map((block, index) => `<option value="${index}">${escapeHtml(block.name)}</option>`).join('');
-    container.innerHTML = structure.map((block, blockIndex) => `<details class="client-structure-block client-structure-block--${escapeHtml(block.tone || 'cyan')}"><summary><div><span class="client-structure-index">${String(blockIndex + 1).padStart(2, '0')}</span><h3>${escapeHtml(block.name)}</h3></div><span class="client-structure-summary-count">${(block.services || []).length} сервісів</span></summary><div class="client-structure-body"><button class="icon-button client-structure-remove client-structure-block-remove" type="button" data-remove-block="${blockIndex}" title="Видалити блок" aria-label="Видалити блок">×</button><ul>${(block.services || []).map((service, serviceIndex) => { const item = typeof service === 'string' ? { name: service, children: [] } : service; return `<li><span><strong>${escapeHtml(item.name)}</strong>${item.children?.length ? `<small class="client-structure-children">${escapeHtml(item.children.join(', '))}</small>` : ''}</span><button class="icon-button client-structure-remove" type="button" data-remove-service="${blockIndex}:${serviceIndex}" title="Видалити сервіс" aria-label="Видалити сервіс">×</button></li>`; }).join('') || '<li class="empty">Сервіси ще не додані.</li>'}</ul></div></details>`).join('');
+    const reportTasks = window.clientTwoReportTasks || [];
+    container.innerHTML = structure.map((block, blockIndex) => `<details class="client-structure-block client-structure-block--${escapeHtml(block.tone || 'cyan')}"><summary><div><span class="client-structure-index">${String(blockIndex + 1).padStart(2, '0')}</span><h3>${escapeHtml(block.name)}</h3></div><span class="client-structure-summary-count">${(block.services || []).length} сервісів</span></summary><div class="client-structure-body"><button class="icon-button client-structure-remove client-structure-block-remove" type="button" data-remove-block="${blockIndex}" title="Видалити блок" aria-label="Видалити блок">×</button><ul>${(block.services || []).map((service, serviceIndex) => { const item = typeof service === 'string' ? { name: service, children: [] } : service; const serviceTasks = reportTasks.filter((task) => task.block === block.name && (task.service === item.name || task.service?.startsWith(`${item.name} (`))); const taskMarkup = serviceTasks.length ? `<details class="client-service-tasks"><summary>${serviceTasks.length} задач</summary><div>${serviceTasks.map((task) => `<p><strong>${escapeHtml(task.title)}</strong><small>${escapeHtml(task.status)} · ${escapeHtml(task.developer)}</small></p>`).join('')}</div></details>` : ''; return `<li><span><strong>${escapeHtml(item.name)}</strong>${item.children?.length ? `<small class="client-structure-children">${escapeHtml(item.children.join(', '))}</small>` : ''}${taskMarkup}</span><button class="icon-button client-structure-remove" type="button" data-remove-service="${blockIndex}:${serviceIndex}" title="Видалити сервіс" aria-label="Видалити сервіс">×</button></li>`; }).join('') || '<li class="empty">Сервіси ще не додані.</li>'}</ul></div></details>`).join('');
     container.querySelectorAll('[data-remove-block]').forEach((button) => button.addEventListener('click', () => {
       structure.splice(Number(button.dataset.removeBlock), 1);
       saveClientTwoStructure(structure);
@@ -1440,8 +1441,9 @@
   function renderClientTwoProfile(report, clientReport = report) {
     const root = document.querySelector('[data-profile-panel="client-two"]');
     if (!root) return;
+    window.clientTwoReportTasks = clientReport.tasks || [];
     let structure = mergeClientTwoReportStructure(readClientTwoStructure(), clientReport.blocks);
-    const synced = syncClientTwoStructureFromReport(structure, clientReport);
+    const synced = clientReport.blocks?.length ? { structure, message: `Структура завантажена зі звіту: ${clientReport.tasks.length} задач.` } : syncClientTwoStructureFromReport(structure, clientReport);
     structure = synced.structure;
     renderClientTwoStructure(structure, synced.message);
     const renderTasks = (targetId, filter) => {
@@ -1470,8 +1472,8 @@
         const name = nameInput.value.trim();
         const parentIndex = parentInput.value;
         if (!name) return;
-        if (parentIndex === '') structure.push({ name, tone: 'cyan', services: [] });
-        else structure[Number(parentIndex)].services.push(name);
+        if (parentIndex === '') structure.push({ name, tone: 'cyan', services: [], source: 'manual' });
+        else structure[Number(parentIndex)].services.push({ name, children: [], source: 'manual' });
         saveClientTwoStructure(structure);
         nameInput.value = '';
         renderClientTwoStructure(structure, parentIndex === '' ? 'Основний блок додано.' : 'Сервіс додано.');
