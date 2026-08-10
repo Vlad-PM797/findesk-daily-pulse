@@ -230,6 +230,7 @@ h2 {
 .client-two-dashboard-panel--wide { grid-column: 1 / -1; }
 .client-two-dashboard-panel h3 { margin: 0; font-size: 1.1rem; }
 .client-two-bars, .client-two-dashboard-list { display: grid; gap: 0.65rem; margin-top: 0.85rem; }
+.client-two-dashboard-panel--status .client-two-bars { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem 0.75rem; }
 .client-two-bar > div, .client-two-dashboard-item > div { display: flex; justify-content: space-between; gap: 0.7rem; color: var(--muted); font-size: 0.78rem; }
 .client-two-bar strong, .client-two-dashboard-item strong { color: var(--ink); }
 .client-two-bar i, .client-two-dashboard-item i { display: block; height: 0.48rem; margin-top: 0.3rem; overflow: hidden; background: var(--line); }
@@ -317,7 +318,7 @@ h2 {
 .client-task__facts b { color: var(--ink); font-size: 0.7rem; }
 @media (max-width: 70rem) { .client-profile-toolbar { grid-template-columns: repeat(3, minmax(0, 1fr)); } .client-filter:first-child { grid-column: 1 / -1; } }
 @media (max-width: 70rem) { .client-two-summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 48rem) { .profile-switcher { overflow-x: auto; } .client-summary-grid, .client-two-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .client-profile-toolbar { grid-template-columns: 1fr; } .client-structure-form, .client-structure-grid, .client-two-dashboard-grid { grid-template-columns: 1fr; } .client-two-dashboard-panel--wide { grid-column: auto; } .client-two-block-grid, .client-two-service-grid { grid-template-columns: 1fr; } .client-filter:first-child { grid-column: auto; } .client-task__title { display: grid; } .client-type { justify-self: start; white-space: normal; } .client-task__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 48rem) { .profile-switcher { overflow-x: auto; } .client-summary-grid, .client-two-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .client-profile-toolbar { grid-template-columns: 1fr; } .client-structure-form, .client-structure-grid, .client-two-dashboard-grid, .client-two-dashboard-panel--status .client-two-bars { grid-template-columns: 1fr; } .client-two-dashboard-panel--wide { grid-column: auto; } .client-two-block-grid, .client-two-service-grid { grid-template-columns: 1fr; } .client-filter:first-child { grid-column: auto; } .client-task__title { display: grid; } .client-type { justify-self: start; white-space: normal; } .client-task__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 :root[data-theme="dark"] .view-button.is-active {
   color: #101713;

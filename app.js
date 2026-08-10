@@ -1531,9 +1531,18 @@
     };
     const renderDashboardBars = () => {
       const target = document.getElementById('client-two-dashboard-status'); if (!target) return;
-      const statuses = [...new Set(tasks.map((task) => task.status || 'інформація відсутня'))].map((status) => [status, tasks.filter((task) => task.status === status).length]).sort((a, b) => b[1] - a[1]);
-      const max = statuses[0]?.[1] || 1;
-      target.innerHTML = statuses.map(([status, count]) => { const statusTasks = tasks.filter((task) => task.status === status); const percentage = Math.round((count / Math.max(1, tasks.length)) * 100); return `<div class="client-two-bar"><div><strong>${escapeHtml(status)}</strong><span>${count}</span></div><i class="client-two-meter" tabindex="0" aria-label="${escapeHtml(status)}: ${count} задач"><b style="width:${Math.max(5, Math.round((count / max) * 100))}%"></b><span class="client-two-dashboard-popover" role="tooltip"><strong>${escapeHtml(status)}</strong><span>${count} задач · ${percentage}% від загальної кількості</span><small>${statusTasks.slice(0, 8).map((task) => escapeHtml(task.title)).join('<br>')}${statusTasks.length > 8 ? '<br>… та інші' : ''}</small></span></i></div>`; }).join('') || '<p class="empty">Дані відсутні.</p>';
+      const simplifyStatus = (status) => {
+        const value = String(status || '').toLowerCase();
+        if (!value || value.includes('інформація відсутня')) return 'Не визначено';
+        if (value.includes('перевір')) return 'На перевірці';
+        if (value.includes('актив') || value.includes('у роботі') || value.includes('в роботі')) return 'В роботі';
+        if (value.includes('до викон')) return 'До виконання';
+        return 'Інший статус';
+      };
+      const groups = new Map(); tasks.forEach((task) => { const label = simplifyStatus(task.status); if (!groups.has(label)) groups.set(label, []); groups.get(label).push(task); });
+      const statuses = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
+      const max = statuses[0]?.[1].length || 1;
+      target.innerHTML = statuses.map(([status, statusTasks]) => { const count = statusTasks.length; const percentage = Math.round((count / Math.max(1, tasks.length)) * 100); const rawStatuses = [...new Set(statusTasks.map((task) => task.status))].join('; '); return `<div class="client-two-bar"><div><strong>${escapeHtml(status)}</strong><span>${count}</span></div><i class="client-two-meter" tabindex="0" aria-label="${escapeHtml(status)}: ${count} задач"><b style="width:${Math.max(5, Math.round((count / max) * 100))}%"></b><span class="client-two-dashboard-popover" role="tooltip"><strong>${escapeHtml(status)}</strong><span>${count} задач · ${percentage}% від загальної кількості</span><small>Статуси у звіті: ${escapeHtml(rawStatuses)}<br><br>${statusTasks.slice(0, 6).map((task) => escapeHtml(task.title)).join('<br>')}${statusTasks.length > 6 ? '<br>… та інші' : ''}</small></span></i></div>`; }).join('') || '<p class="empty">Дані відсутні.</p>';
     };
     const renderDashboardDevelopers = () => {
       const target = document.getElementById('client-two-dashboard-developers'); if (!target) return;
