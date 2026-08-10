@@ -237,6 +237,8 @@ h2 {
 .client-structure-block ul { display: grid; gap: 0; margin: 0; padding: 0 2.4rem 0 0; list-style: none; }
 .client-structure-block li { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.6rem; padding: 0.55rem 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; line-height: 1.35; }
 .client-structure-block li span { min-width: 0; }
+.client-structure-block li strong { display: block; color: var(--ink); font-size: 0.8rem; }
+.client-structure-children { display: block; margin-top: 0.2rem; color: var(--muted); font-size: 0.72rem; line-height: 1.35; }
 .client-structure-remove { flex: 0 0 auto; color: var(--muted); }
 .client-structure-remove:hover, .client-structure-remove:focus-visible { color: var(--red); border-color: var(--red); }
 .client-block-list { display: grid; gap: 0.55rem; }

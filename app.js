@@ -446,6 +446,87 @@
     }, []);
   }
 
+  function parseClientTwoReport(markdown) {
+    const lines = markdown.split(/\r?\n/);
+    const tones = ['cyan', 'blue', 'violet', 'amber', 'green', 'red'];
+    const blocks = [];
+    const tasks = [];
+    let block = null;
+    let service = null;
+    let category = null;
+    let serviceDepth = 0;
+    let currentTask = null;
+    let taskIndent = 0;
+
+    const cleanHeading = (value) => stripMarkdown(value.replace(/^\s*\d+\.\s*/, '').trim());
+    const ensureTask = (title) => {
+      if (!title || !block || !service) return null;
+      currentTask = { title: stripMarkdown(title).trim(), block: block.name, service: service.name, status: 'інформація відсутня', developer: 'інформація відсутня', deadline: 'інформація відсутня', source: 'інформація відсутня' };
+      tasks.push(currentTask);
+      service.tasks.push(currentTask);
+      return currentTask;
+    };
+    const addService = (name, depth) => {
+      if (!block) return null;
+      service = { name: cleanHeading(name), children: [], tasks: [] };
+      block.services.push(service);
+      serviceDepth = depth;
+      return service;
+    };
+
+    lines.forEach((line) => {
+      const heading = line.match(/^(#{2,4})\s+(.+?)\s*$/);
+      if (heading) {
+        const depth = heading[1].length;
+        const name = cleanHeading(heading[2]);
+        currentTask = null;
+        const isNumberedBlock = /^\d{1,2}\./.test(heading[2].trim());
+        if (depth === 2 || isNumberedBlock) {
+          block = { name, tone: tones[blocks.length % tones.length], services: [] };
+          blocks.push(block);
+          service = null;
+          category = null;
+        } else if (depth === 3) {
+          service = addService(name, depth);
+          category = block.name.includes('Бізнес-домени') ? service : null;
+        } else if (depth === 4 && block?.name.includes('Бізнес-домени')) {
+          if (!category) category = addService('Інші сервіси', 3);
+          const child = { name, tasks: [] };
+          category.children.push(child);
+          service = child;
+          serviceDepth = depth;
+        }
+        return;
+      }
+      if (!block || !service) return;
+      const trimmed = line.trim();
+      if (!trimmed) return;
+      const namedTask = trimmed.match(/^-\s*Назва задачі:\s*(.+)$/i);
+      if (namedTask) {
+        ensureTask(namedTask[1]);
+        return;
+      }
+      const numberedTask = trimmed.match(/^\d+\.\s+(.+)$/);
+      if (numberedTask && !/^\d+\.\d+/.test(numberedTask[1])) {
+        ensureTask(numberedTask[1]);
+        taskIndent = line.search(/\S/);
+        return;
+      }
+      if (!currentTask || line.search(/\S/) < taskIndent) return;
+      const field = trimmed.match(/^[-*]\s*([^:]+):\s*(.+)$/);
+      if (!field) return;
+      const key = field[1].trim().toLowerCase();
+      const value = stripMarkdown(field[2].trim());
+      if (key === 'статус') currentTask.status = value;
+      if (key === 'виконавець' || key === 'виконавці') currentTask.developer = value;
+      if (key === 'дедлайн' || key === 'планова дата виконання') currentTask.deadline = value;
+      if (key === 'джерело') currentTask.source = value;
+    });
+
+    const structure = blocks.map((item) => ({ name: item.name, tone: item.tone, services: item.services.map((itemService) => ({ name: itemService.name, children: itemService.children.map((child) => child.name), tasks: itemService.tasks })) }));
+    return { title: (markdown.match(/^#\s+(.+)$/m)?.[1] || 'Замовник 2').trim(), blocks: structure, tasks };
+  }
+
   function parseDailyReport(markdown) {
     const titleMatch = markdown.match(/^#\s+(.+)$/m) || markdown.match(/^\s*(?:Фіндеск|Findesk)\s+[^\n]+/im);
     const title = stripMarkdown(titleMatch ? titleMatch[1] || titleMatch[0].trim() : 'Findesk daily report').replace(/^Фіндеск(?=\s|$)/i, 'Findesk');
@@ -1292,6 +1373,21 @@
     { name: 'Доставка, якість та управління', tone: 'red', services: ['Код і CI · Findesk-prod, GitHub Actions', 'Розгортання · Docker / Dokploy', 'Спостереження · GlitchTip + logs', 'Керування роботою · Worksection 311247'] }
   ];
 
+  function mergeClientTwoReportStructure(savedStructure, reportStructure) {
+    if (!reportStructure?.length) return savedStructure;
+    const structure = reportStructure.map((block) => ({ ...block, services: (block.services || []).map((service) => typeof service === 'string' ? service : ({ ...service, children: [...(service.children || [])], tasks: [...(service.tasks || [])] })) }));
+    const reportBlockNames = new Set(structure.map((block) => block.name));
+    savedStructure.forEach((savedBlock) => {
+      if (!reportBlockNames.has(savedBlock.name)) structure.push({ ...savedBlock, services: [...(savedBlock.services || [])] });
+      else {
+        const target = structure.find((item) => item.name === savedBlock.name);
+        const known = new Set((target.services || []).map((item) => typeof item === 'string' ? item : item.name));
+        (savedBlock.services || []).forEach((item) => { const name = typeof item === 'string' ? item : item.name; if (!known.has(name)) target.services.push(item); });
+      }
+    });
+    return structure;
+  }
+
   function readClientTwoStructure() {
     try {
       const stored = JSON.parse(window.localStorage.getItem('findesk-client-two-structure') || 'null');
@@ -1311,7 +1407,7 @@
     const parent = document.getElementById('client-two-structure-parent');
     if (!container || !parent) return;
     parent.innerHTML = '<option value="">Новий основний блок</option>' + structure.map((block, index) => `<option value="${index}">${escapeHtml(block.name)}</option>`).join('');
-    container.innerHTML = structure.map((block, blockIndex) => `<details class="client-structure-block client-structure-block--${escapeHtml(block.tone || 'cyan')}"><summary><div><span class="client-structure-index">${String(blockIndex + 1).padStart(2, '0')}</span><h3>${escapeHtml(block.name)}</h3></div><span class="client-structure-summary-count">${(block.services || []).length} сервісів</span></summary><div class="client-structure-body"><button class="icon-button client-structure-remove client-structure-block-remove" type="button" data-remove-block="${blockIndex}" title="Видалити блок" aria-label="Видалити блок">×</button><ul>${(block.services || []).map((service, serviceIndex) => `<li><span>${escapeHtml(service)}</span><button class="icon-button client-structure-remove" type="button" data-remove-service="${blockIndex}:${serviceIndex}" title="Видалити сервіс" aria-label="Видалити сервіс">×</button></li>`).join('') || '<li class="empty">Сервіси ще не додані.</li>'}</ul></div></details>`).join('');
+    container.innerHTML = structure.map((block, blockIndex) => `<details class="client-structure-block client-structure-block--${escapeHtml(block.tone || 'cyan')}"><summary><div><span class="client-structure-index">${String(blockIndex + 1).padStart(2, '0')}</span><h3>${escapeHtml(block.name)}</h3></div><span class="client-structure-summary-count">${(block.services || []).length} сервісів</span></summary><div class="client-structure-body"><button class="icon-button client-structure-remove client-structure-block-remove" type="button" data-remove-block="${blockIndex}" title="Видалити блок" aria-label="Видалити блок">×</button><ul>${(block.services || []).map((service, serviceIndex) => { const item = typeof service === 'string' ? { name: service, children: [] } : service; return `<li><span><strong>${escapeHtml(item.name)}</strong>${item.children?.length ? `<small class="client-structure-children">${escapeHtml(item.children.join(', '))}</small>` : ''}</span><button class="icon-button client-structure-remove" type="button" data-remove-service="${blockIndex}:${serviceIndex}" title="Видалити сервіс" aria-label="Видалити сервіс">×</button></li>`; }).join('') || '<li class="empty">Сервіси ще не додані.</li>'}</ul></div></details>`).join('');
     container.querySelectorAll('[data-remove-block]').forEach((button) => button.addEventListener('click', () => {
       structure.splice(Number(button.dataset.removeBlock), 1);
       saveClientTwoStructure(structure);
@@ -1328,7 +1424,7 @@
 
   function syncClientTwoStructureFromReport(structure, report) {
     const reportServices = [...new Set((report?.updateTasks || []).map((task) => task.service).filter(Boolean))];
-    const knownServices = new Set(structure.flatMap((block) => block.services || []));
+    const knownServices = new Set(structure.flatMap((block) => (block.services || []).map((service) => typeof service === 'string' ? service : service.name)));
     const newServices = reportServices.filter((service) => !knownServices.has(service));
     if (!newServices.length) return { structure, message: 'Структура завантажена. Нових сервісів у звіті не знайдено.' };
     let reportBlock = structure.find((block) => block.name === 'Сервіси зі звіту');
@@ -1341,13 +1437,22 @@
     return { structure, message: `Структура оновлена зі звіту: додано ${newServices.length} сервісів.` };
   }
 
-  function renderClientTwoProfile(report) {
+  function renderClientTwoProfile(report, clientReport = report) {
     const root = document.querySelector('[data-profile-panel="client-two"]');
     if (!root) return;
-    let structure = readClientTwoStructure();
-    const synced = syncClientTwoStructureFromReport(structure, report);
+    let structure = mergeClientTwoReportStructure(readClientTwoStructure(), clientReport.blocks);
+    const synced = syncClientTwoStructureFromReport(structure, clientReport);
     structure = synced.structure;
     renderClientTwoStructure(structure, synced.message);
+    const renderTasks = (targetId, filter) => {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      const filtered = (clientReport.tasks || []).filter((task) => !filter || filter(task));
+      target.innerHTML = filtered.map((task) => `<article class="client-task"><div class="client-task__title"><strong>${escapeHtml(task.title)}</strong><span class="client-type">${escapeHtml(task.status)}</span></div><div class="client-task__facts"><span><b>Блок / сервіс</b>${escapeHtml(task.block)} · ${escapeHtml(task.service)}</span><span><b>Виконавець</b>${escapeHtml(task.developer)}</span><span><b>Дедлайн</b>${escapeHtml(task.deadline)}</span><span><b>Джерело</b>${escapeHtml(task.source)}</span></div></article>`).join('') || '<p class="empty client-info-empty">За цим ракурсом задач не знайдено.</p>';
+    };
+    renderTasks('client-two-tasks-all');
+    renderTasks('client-two-tasks-active', (task) => /активна|у роботі|перевірці/i.test(task.status));
+    renderTasks('client-two-tasks-deadlines', (task) => task.deadline !== 'інформація відсутня' || /питан|дедлайн|фідбек/i.test(`${task.title} ${task.status}`));
     if (!root.dataset.viewsBound) {
       root.querySelectorAll('[data-client-two-view]').forEach((button) => button.addEventListener('click', () => {
         const view = button.dataset.clientTwoView;
@@ -1560,6 +1665,7 @@
       mergeStructureWithReport,
       normalizeTheme,
       parseDailyReport,
+      parseClientTwoReport,
       parseUpdateTasks,
       parseProjectStructure,
       resolveInitialTheme
@@ -1606,6 +1712,17 @@
         const reportResponse = await fetch('reports/current.md', { cache: 'no-store' });
         if (!reportResponse.ok) throw new Error(`HTTP ${reportResponse.status}`);
         const markdown = await reportResponse.text();
+        let clientTwoReport = null;
+        let clientTwoSourceStatus = 'reports/current-2.md не знайдено';
+        try {
+          const clientTwoResponse = await fetch('reports/current-2.md', { cache: 'no-store' });
+          if (clientTwoResponse.ok) {
+            clientTwoReport = parseClientTwoReport(await clientTwoResponse.text());
+            clientTwoSourceStatus = 'reports/current-2.md підключено';
+          }
+        } catch (clientTwoError) {
+          console.warn('Client 2 profile source is unavailable.', clientTwoError);
+        }
         let classicReport = null;
         let classicSourceStatus = 'reports/current-3.md не знайдено';
         try {
@@ -1631,21 +1748,22 @@
           }
         }
         const report = parseDailyReport(markdown);
+        clientTwoReport ||= { blocks: [], tasks: [] };
         classicReport ||= report;
         window.profileSourceStatus = {
           operational: 'reports/current.md підключено',
-          'client-two': 'reports/current.md підключено',
+          'client-two': clientTwoSourceStatus,
           classic: classicSourceStatus
         };
         window.profileReports = {
           operational: report,
-          'client-two': report,
+          'client-two': clientTwoReport,
           classic: classicReport
         };
         window.currentDailyReport = report;
         renderReport(report, structurePayload);
         renderClassicProfile(classicReport);
-        renderClientTwoProfile(report);
+        renderClientTwoProfile(report, clientTwoReport);
         activateProfile(initialProfile || 'operational');
       } catch (error) {
         showError(error);
