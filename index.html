@@ -148,9 +148,21 @@
           <article class="client-two-summary-card client-two-summary-card--warning" data-client-two-summary-card="no-deadline"><span>Без терміну</span><strong id="client-two-no-deadline">0</strong><small>потрібно уточнити</small></article>
         </div>
         <div class="client-two-dashboard-grid">
-          <article class="client-two-dashboard-panel client-two-dashboard-panel--status">
+          <article class="client-two-dashboard-panel client-two-dashboard-panel--status client-two-dashboard-panel--wide">
             <div class="section-heading"><p class="eyebrow">Стан робіт</p><h3>Задачі за статусами</h3></div>
             <div id="client-two-dashboard-status" class="client-two-bars"></div>
+          </article>
+          <article class="client-two-dashboard-panel">
+            <div class="section-heading"><p class="eyebrow">Рішення</p><h3>Потребує уваги</h3></div>
+            <div id="client-two-dashboard-attention" class="client-two-insight-list"></div>
+          </article>
+          <article class="client-two-dashboard-panel">
+            <div class="section-heading"><p class="eyebrow">Якість плану</p><h3>Наскільки звіт готовий до роботи</h3></div>
+            <div id="client-two-dashboard-health" class="client-two-health-list"></div>
+          </article>
+          <article class="client-two-dashboard-panel client-two-dashboard-panel--wide">
+            <div class="section-heading"><p class="eyebrow">Висновок</p><h3>Поточний управлінський сигнал</h3></div>
+            <p id="client-two-dashboard-takeaway" class="client-two-takeaway"></p>
           </article>
         </div>
       </div>
@@ -275,6 +287,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260810-client-two-dashboard-final"></script>
+  <script src="app.js?v=20260810-client-two-dashboard-insights"></script>
 </body>
 </html>

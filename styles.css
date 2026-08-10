@@ -243,6 +243,17 @@ h2 {
 .client-two-meter:hover .client-two-dashboard-popover, .client-two-meter:focus-visible .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-summary-card:hover > .client-two-dashboard-popover, .client-two-summary-card:focus-visible > .client-two-dashboard-popover, .client-two-dashboard-hover:hover > .client-two-dashboard-popover, .client-two-dashboard-hover:focus-visible > .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-dashboard-item small { display: block; margin-top: 0.2rem; color: var(--muted); font-size: 0.72rem; }
+.client-two-insight-list, .client-two-health-list { display: grid; gap: 0.55rem; margin-top: 0.85rem; }
+.client-two-insight-card { position: relative; border-left: 0.25rem solid var(--line); padding: 0.55rem 0.65rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
+.client-two-insight-card.is-warning { border-color: var(--amber); }
+.client-two-insight-card.is-ok { border-color: var(--green); }
+.client-two-insight-card > div, .client-two-health-item > div { display: flex; justify-content: space-between; gap: 0.6rem; }
+.client-two-insight-card strong, .client-two-health-item strong { color: var(--ink); font-size: 0.8rem; }
+.client-two-insight-card b, .client-two-health-item span { color: var(--ink); font-size: 1.1rem; }
+.client-two-insight-card small, .client-two-health-item small { display: block; margin-top: 0.25rem; color: var(--muted); font-size: 0.7rem; }
+.client-two-health-item i { display: block; height: 0.45rem; margin-top: 0.28rem; overflow: hidden; background: var(--line); }
+.client-two-health-item i b { display: block; height: 100%; background: linear-gradient(90deg, var(--amber), var(--green)); }
+.client-two-takeaway { margin: 0.8rem 0 0; border-left: 0.3rem solid var(--blue); padding: 0.8rem 0.9rem; color: var(--ink); background: color-mix(in srgb, var(--blue) 7%, var(--surface)); line-height: 1.5; }
 .client-two-block-grid { display: grid; gap: 0.55rem; margin-top: 0.85rem; }
 .client-two-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin-top: 0.85rem; }
 .client-two-service-card { min-width: 0; border: 1px solid var(--line); padding: 0.7rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }

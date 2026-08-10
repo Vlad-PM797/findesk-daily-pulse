@@ -1521,9 +1521,36 @@
     setText('client-two-bugs', tasks.filter((task) => task.type === 'bug').length); setText('client-two-enhancements', tasks.filter((task) => task.type === 'enhancement').length); setText('client-two-new', tasks.filter((task) => task.type === 'new').length);
     setText('client-two-active', tasks.filter(isActive).length); setText('client-two-review', tasks.filter(isReview).length); setText('client-two-overdue', tasks.filter((task) => deadlineState(task) === 'overdue').length); setText('client-two-no-deadline', tasks.filter((task) => deadlineState(task) === 'none').length);
     const splitPeople = (value) => String(value || 'інформація відсутня').split(/,\s*/).map((item) => item.trim()).filter(Boolean);
+    const isMissing = (value) => !value || /інформація відсутня|не вказано|не визначено/i.test(String(value));
     const summaryGroups = { total: tasks, bug: tasks.filter((task) => task.type === 'bug'), enhancement: tasks.filter((task) => task.type === 'enhancement'), new: tasks.filter((task) => task.type === 'new'), active: tasks.filter(isActive), review: tasks.filter(isReview), overdue: tasks.filter((task) => deadlineState(task) === 'overdue'), 'no-deadline': tasks.filter((task) => deadlineState(task) === 'none') };
     const summaryHelp = { total: 'Усі задачі, що завантажені з current-2.md.', bug: 'Задачі, які класифіковані як баги або виправлення.', enhancement: 'Задачі на допрацювання, підтримку, перевірку або інтеграції.', new: 'Задачі нового функціоналу та нової розробки.', active: 'Задачі зі статусом роботи, активності або поточного виконання.', review: 'Задачі, де згадано перевірку, тестування або приймання.', overdue: 'Задачі, планова дата яких уже минула.', 'no-deadline': 'Задачі, для яких не вказано планову дату.' };
     document.querySelectorAll('[data-client-two-summary-card]').forEach((card) => { const key = card.dataset.clientTwoSummaryCard; const group = summaryGroups[key] || []; card.querySelectorAll('.client-two-dashboard-popover').forEach((node) => node.remove()); const popover = document.createElement('span'); popover.className = 'client-two-dashboard-popover'; popover.setAttribute('role', 'tooltip'); popover.innerHTML = `<strong>${escapeHtml(summaryHelp[key] || '')}</strong><span>${group.length} задач</span><small>${group.slice(0, 7).map((task) => escapeHtml(task.title)).join('<br>')}${group.length > 7 ? '<br>… та інші' : ''}</small>`; card.appendChild(popover); });
+    const missingDeveloper = tasks.filter((task) => isMissing(task.developer));
+    const missingClient = tasks.filter((task) => isMissing(task.client));
+    const missingDate = tasks.filter((task) => deadlineState(task) === 'none');
+    const noFeedback = tasks.filter((task) => /фідбек|feedback|питання відкрите/i.test(`${task.title} ${task.status}`));
+    const multiParticipant = tasks.filter((task) => splitPeople(task.developer).length > 1 || splitPeople(task.client).length > 1);
+    const renderInsightList = () => {
+      const target = document.getElementById('client-two-dashboard-attention'); if (!target) return;
+      const items = [
+        ['Уточнити терміни', missingDate, 'задач без планової дати'],
+        ['Призначити виконавців', missingDeveloper, 'задач без відповідального'],
+        ['Отримати фідбек', noFeedback, 'задач із відкритим питанням або очікуванням'],
+        ['Підтвердити учасників', multiParticipant, 'задач із кількома відповідальними сторонами']
+      ];
+      target.innerHTML = items.map(([label, group, note]) => `<article class="client-two-insight-card ${group.length ? 'is-warning' : 'is-ok'} client-two-dashboard-hover"><div><strong>${escapeHtml(label)}</strong><b>${group.length}</b></div><small>${escapeHtml(note)}</small><span class="client-two-dashboard-popover" role="tooltip"><strong>${escapeHtml(label)}</strong><span>${group.length} задач</span><small>${group.slice(0, 7).map((task) => escapeHtml(task.title)).join('<br>')}${group.length > 7 ? '<br>… та інші' : ''}</small></span></article>`).join('');
+    };
+    const renderDashboardHealth = () => {
+      const target = document.getElementById('client-two-dashboard-health'); if (!target) return;
+      const checks = [['Виконавець', tasks.filter((task) => !isMissing(task.developer)).length], ['Замовник', tasks.filter((task) => !isMissing(task.client)).length], ['Планова дата', tasks.filter((task) => deadlineState(task) !== 'none').length], ['Джерело', tasks.filter((task) => !isMissing(task.source)).length]];
+      target.innerHTML = checks.map(([label, count]) => { const percent = Math.round((count / Math.max(1, tasks.length)) * 100); return `<div class="client-two-health-item"><div><strong>${escapeHtml(label)}</strong><span>${percent}%</span></div><i><b style="width:${percent}%"></b></i><small>${count} з ${tasks.length} задач мають дані</small></div>`; }).join('');
+    };
+    const renderDashboardTakeaway = () => {
+      const target = document.getElementById('client-two-dashboard-takeaway'); if (!target) return;
+      const largestGap = [['термінів', missingDate.length], ['виконавців', missingDeveloper.length], ['фідбеку', noFeedback.length]].sort((a, b) => b[1] - a[1])[0];
+      target.textContent = tasks.length ? `У звіті ${tasks.length} задач. Найбільша зона уваги — ${largestGap[1]} задач без уточнених ${largestGap[0]}. На дашборді показано управлінські розриви, а перелік блоків, сервісів і задач доступний у вкладці «Структура».` : 'Дані для формування управлінського висновку відсутні.';
+    };
+    renderInsightList(); renderDashboardHealth(); renderDashboardTakeaway();
     const groupByPeople = (field) => {
       const grouped = new Map();
       tasks.forEach((task) => splitPeople(task[field]).forEach((person) => {
