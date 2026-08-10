@@ -135,6 +135,7 @@ h2 {
   background: rgba(247, 245, 239, 0.88);
   backdrop-filter: blur(12px);
 }
+.view-switcher[hidden] { display: none !important; }
 
 .view-button {
   min-height: 2.5rem;

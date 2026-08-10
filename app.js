@@ -1565,6 +1565,11 @@
       button.setAttribute('aria-pressed', String(active));
     });
     document.querySelectorAll('.view-panel').forEach((panel) => { panel.hidden = profile !== 'operational'; });
+    const operationalNavigation = document.querySelector('.view-switcher');
+    if (operationalNavigation) {
+      operationalNavigation.hidden = profile !== 'operational';
+      operationalNavigation.setAttribute('aria-hidden', String(profile !== 'operational'));
+    }
     document.querySelectorAll('[data-profile-panel]').forEach((panel) => { panel.hidden = panel.dataset.profilePanel !== profile; });
     const sourceStatus = window.profileSourceStatus?.[profile];
     if (sourceStatus) setText('source-status', sourceStatus);
