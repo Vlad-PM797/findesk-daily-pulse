@@ -129,16 +129,27 @@
         <h2 id="client-two-title">Дерево продукту й технічної платформи</h2>
         <p class="section-description">Шість основних блоків проєкту та сервіси в їхньому складі. Дані задач і статусів з’являться після підключення окремого звіту.</p>
       </div>
-      <div class="client-structure-toolbar" role="toolbar" aria-label="Керування структурою профілю замовника 2">
-        <form id="client-two-structure-form" class="client-structure-form">
-          <label class="client-filter"><span>Додати до</span><select id="client-two-structure-parent"><option value="">Новий основний блок</option></select></label>
-          <label class="client-filter"><span>Назва</span><input id="client-two-structure-name" type="text" placeholder="Назва блоку або сервісу" required></label>
-          <button class="button button--primary" type="submit">Додати</button>
-        </form>
-        <button id="client-two-structure-reset" class="button" type="button">Відновити базову структуру</button>
+      <div class="client-info-tabs" role="tablist" aria-label="Ракурс інформації замовника 2">
+        <button class="tab client-info-tab is-active" type="button" data-client-two-view="structure" role="tab" aria-selected="true">Структура</button>
+        <button class="tab client-info-tab" type="button" data-client-two-view="all" role="tab" aria-selected="false">Всі задачі</button>
+        <button class="tab client-info-tab" type="button" data-client-two-view="active" role="tab" aria-selected="false">В роботі</button>
+        <button class="tab client-info-tab" type="button" data-client-two-view="deadlines" role="tab" aria-selected="false">Дедлайни та питання</button>
       </div>
-      <p id="client-two-structure-status" class="client-filter-summary"></p>
-      <div id="client-two-structure" class="client-structure-grid"></div>
+      <div class="client-info-view" data-client-two-view-panel="structure">
+        <div class="client-structure-toolbar" role="toolbar" aria-label="Керування структурою профілю замовника 2">
+          <form id="client-two-structure-form" class="client-structure-form">
+            <label class="client-filter"><span>Додати до</span><select id="client-two-structure-parent"><option value="">Новий основний блок</option></select></label>
+            <label class="client-filter"><span>Назва</span><input id="client-two-structure-name" type="text" placeholder="Назва блоку або сервісу" required></label>
+            <button class="button button--primary" type="submit">Додати</button>
+          </form>
+          <button id="client-two-structure-reset" class="button" type="button">Відновити базову структуру</button>
+        </div>
+        <p id="client-two-structure-status" class="client-filter-summary"></p>
+        <div id="client-two-structure" class="client-structure-grid"></div>
+      </div>
+      <div class="client-info-view" data-client-two-view-panel="all" hidden><p class="empty client-info-empty">Окремий звіт для профілю «Замовник 2» ще не підключено.</p></div>
+      <div class="client-info-view" data-client-two-view-panel="active" hidden><p class="empty client-info-empty">Задачі в роботі з’являться після підключення звіту профілю «Замовник 2».</p></div>
+      <div class="client-info-view" data-client-two-view-panel="deadlines" hidden><p class="empty client-info-empty">Дедлайни та питання з’являться після підключення звіту профілю «Замовник 2».</p></div>
     </section>
 
     <section class="view-panel modules-view" data-view="modules" aria-labelledby="modules-view-title">

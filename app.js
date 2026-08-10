@@ -1311,7 +1311,7 @@
     const parent = document.getElementById('client-two-structure-parent');
     if (!container || !parent) return;
     parent.innerHTML = '<option value="">Новий основний блок</option>' + structure.map((block, index) => `<option value="${index}">${escapeHtml(block.name)}</option>`).join('');
-    container.innerHTML = structure.map((block, blockIndex) => `<article class="client-structure-block client-structure-block--${escapeHtml(block.tone || 'cyan')}"><header><div><span class="client-structure-index">${String(blockIndex + 1).padStart(2, '0')}</span><h3>${escapeHtml(block.name)}</h3></div><button class="icon-button client-structure-remove" type="button" data-remove-block="${blockIndex}" title="Видалити блок" aria-label="Видалити блок">×</button></header><ul>${(block.services || []).map((service, serviceIndex) => `<li><span>${escapeHtml(service)}</span><button class="icon-button client-structure-remove" type="button" data-remove-service="${blockIndex}:${serviceIndex}" title="Видалити сервіс" aria-label="Видалити сервіс">×</button></li>`).join('') || '<li class="empty">Сервіси ще не додані.</li>'}</ul></article>`).join('');
+    container.innerHTML = structure.map((block, blockIndex) => `<details class="client-structure-block client-structure-block--${escapeHtml(block.tone || 'cyan')}"><summary><div><span class="client-structure-index">${String(blockIndex + 1).padStart(2, '0')}</span><h3>${escapeHtml(block.name)}</h3></div><span class="client-structure-summary-count">${(block.services || []).length} сервісів</span></summary><div class="client-structure-body"><button class="icon-button client-structure-remove client-structure-block-remove" type="button" data-remove-block="${blockIndex}" title="Видалити блок" aria-label="Видалити блок">×</button><ul>${(block.services || []).map((service, serviceIndex) => `<li><span>${escapeHtml(service)}</span><button class="icon-button client-structure-remove" type="button" data-remove-service="${blockIndex}:${serviceIndex}" title="Видалити сервіс" aria-label="Видалити сервіс">×</button></li>`).join('') || '<li class="empty">Сервіси ще не додані.</li>'}</ul></div></details>`).join('');
     container.querySelectorAll('[data-remove-block]').forEach((button) => button.addEventListener('click', () => {
       structure.splice(Number(button.dataset.removeBlock), 1);
       saveClientTwoStructure(structure);
@@ -1348,6 +1348,14 @@
     const synced = syncClientTwoStructureFromReport(structure, report);
     structure = synced.structure;
     renderClientTwoStructure(structure, synced.message);
+    if (!root.dataset.viewsBound) {
+      root.querySelectorAll('[data-client-two-view]').forEach((button) => button.addEventListener('click', () => {
+        const view = button.dataset.clientTwoView;
+        root.querySelectorAll('[data-client-two-view]').forEach((item) => { const active = item === button; item.classList.toggle('is-active', active); item.setAttribute('aria-selected', String(active)); });
+        root.querySelectorAll('[data-client-two-view-panel]').forEach((panel) => { panel.hidden = panel.dataset.clientTwoViewPanel !== view; });
+      }));
+      root.dataset.viewsBound = 'true';
+    }
     const form = document.getElementById('client-two-structure-form');
     if (form && !form.dataset.bound) {
       form.addEventListener('submit', (event) => {
