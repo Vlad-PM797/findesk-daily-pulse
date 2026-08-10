@@ -1520,6 +1520,38 @@
     setText('client-two-total', tasks.length); setText('client-two-total-note', `${clientReport.blocks?.length || 0} блоків`);
     setText('client-two-bugs', tasks.filter((task) => task.type === 'bug').length); setText('client-two-enhancements', tasks.filter((task) => task.type === 'enhancement').length); setText('client-two-new', tasks.filter((task) => task.type === 'new').length);
     setText('client-two-active', tasks.filter(isActive).length); setText('client-two-review', tasks.filter(isReview).length); setText('client-two-overdue', tasks.filter((task) => deadlineState(task) === 'overdue').length); setText('client-two-no-deadline', tasks.filter((task) => deadlineState(task) === 'none').length);
+    const splitPeople = (value) => String(value || 'інформація відсутня').split(/,\s*/).map((item) => item.trim()).filter(Boolean);
+    const groupByPeople = (field) => {
+      const grouped = new Map();
+      tasks.forEach((task) => splitPeople(task[field]).forEach((person) => {
+        if (!grouped.has(person)) grouped.set(person, []);
+        grouped.get(person).push(task);
+      }));
+      return [...grouped.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], 'uk'));
+    };
+    const renderDashboardBars = () => {
+      const target = document.getElementById('client-two-dashboard-status'); if (!target) return;
+      const statuses = [...new Set(tasks.map((task) => task.status || 'інформація відсутня'))].map((status) => [status, tasks.filter((task) => task.status === status).length]).sort((a, b) => b[1] - a[1]);
+      const max = statuses[0]?.[1] || 1;
+      target.innerHTML = statuses.map(([status, count]) => `<div class="client-two-bar"><div><strong>${escapeHtml(status)}</strong><span>${count}</span></div><i><b style="width:${Math.max(5, Math.round((count / max) * 100))}%"></b></i></div>`).join('') || '<p class="empty">Дані відсутні.</p>';
+    };
+    const renderDashboardDevelopers = () => {
+      const target = document.getElementById('client-two-dashboard-developers'); if (!target) return;
+      const developers = groupByPeople('developer');
+      target.innerHTML = developers.map(([name, items]) => { const active = items.filter(isActive).length; const overdue = items.filter((task) => deadlineState(task) === 'overdue').length; return `<div class="client-two-dashboard-item"><div><strong>${escapeHtml(name)}</strong><span>${items.length} задач</span></div><small>${active} в роботі · ${overdue} прострочено</small><i><b style="width:${Math.max(6, Math.round((items.length / Math.max(1, tasks.length)) * 100))}%"></b></i></div>`; }).join('') || '<p class="empty">Розробників не вказано.</p>';
+    };
+    const renderDashboardBlocks = () => {
+      const target = document.getElementById('client-two-dashboard-blocks'); if (!target) return;
+      const blockNames = [...new Set([...(clientReport.blocks || []).map((block) => block.name), ...tasks.map((task) => task.block)])].filter(Boolean);
+      target.innerHTML = blockNames.map((name) => { const items = tasks.filter((task) => task.block === name); const services = new Set(items.map((task) => task.service)); const bugs = items.filter((task) => task.type === 'bug').length; const enhancements = items.filter((task) => task.type === 'enhancement').length; const fresh = items.filter((task) => task.type === 'new').length; const overdue = items.filter((task) => deadlineState(task) === 'overdue').length; return `<article class="client-two-block-card"><div class="client-two-block-card__head"><strong>${escapeHtml(name)}</strong><b>${items.length}</b></div><div class="client-two-block-card__meta"><span>${services.size} сервісів</span><span>${items.filter(isActive).length} в роботі</span><span class="is-danger">${overdue} прострочено</span></div><div class="client-two-mini-bars"><i class="is-danger" style="width:${items.length ? (bugs / items.length) * 100 : 0}%"></i><i class="is-warning" style="width:${items.length ? (enhancements / items.length) * 100 : 0}%"></i><i class="is-info" style="width:${items.length ? (fresh / items.length) * 100 : 0}%"></i></div></article>`; }).join('') || '<p class="empty">Блоки ще не визначені.</p>';
+    };
+    const renderDashboardServices = () => {
+      const target = document.getElementById('client-two-dashboard-services'); if (!target) return;
+      const grouped = new Map(); tasks.forEach((task) => { const key = `${task.block}|||${task.service}`; if (!grouped.has(key)) grouped.set(key, []); grouped.get(key).push(task); });
+      const services = [...grouped.entries()].sort((a, b) => b[1].length - a[1].length);
+      target.innerHTML = services.map(([key, items]) => { const [block, service] = key.split('|||'); const people = [...new Set(items.flatMap((task) => splitPeople(task.developer)))].filter((person) => person !== 'інформація відсутня'); return `<article class="client-two-service-card"><div class="client-two-service-card__head"><strong>${escapeHtml(service)}</strong><b>${items.length}</b></div><small>${escapeHtml(block)}</small><p>${items.filter(isActive).length} в роботі · ${items.filter((task) => task.type === 'bug').length} багів · ${items.filter((task) => deadlineState(task) === 'overdue').length} прострочено</p><span>${escapeHtml(people.join(', ') || 'Виконавця не вказано')}</span></article>`; }).join('') || '<p class="empty">Сервіси ще не визначені.</p>';
+    };
+    renderDashboardBars(); renderDashboardDevelopers(); renderDashboardBlocks(); renderDashboardServices();
     renderAll();
     if (!root.dataset.filtersBound) {
       ['search', 'block-filter', 'service-filter', 'developer-filter', 'status-filter', 'type-filter'].forEach((suffix) => document.getElementById(`client-two-task-${suffix}`)?.addEventListener(suffix === 'search' ? 'input' : 'change', () => renderClientTwoProfile(report, clientReport)));

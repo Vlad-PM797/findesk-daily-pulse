@@ -130,7 +130,8 @@
         <p class="section-description">Шість основних блоків проєкту та сервіси в їхньому складі. Нижче можна побачити загальний стан, розподіл робіт і деталізацію кожної задачі.</p>
       </div>
       <div class="client-info-tabs" role="tablist" aria-label="Ракурс інформації замовника 2">
-        <button class="tab client-info-tab is-active" type="button" data-client-two-view="structure" role="tab" aria-selected="true">Структура</button>
+        <button class="tab client-info-tab is-active" type="button" data-client-two-view="dashboard" role="tab" aria-selected="true">Дашборд</button>
+        <button class="tab client-info-tab" type="button" data-client-two-view="structure" role="tab" aria-selected="false">Структура</button>
         <button class="tab client-info-tab" type="button" data-client-two-view="all" role="tab" aria-selected="false">Всі задачі</button>
         <button class="tab client-info-tab" type="button" data-client-two-view="active" role="tab" aria-selected="false">В роботі</button>
         <button class="tab client-info-tab" type="button" data-client-two-view="deadlines" role="tab" aria-selected="false">Дедлайни та питання</button>
@@ -144,6 +145,26 @@
         <article class="client-two-summary-card"><span>На перевірці</span><strong id="client-two-review">0</strong><small>перевірка або тестування</small></article>
         <article class="client-two-summary-card client-two-summary-card--overdue"><span>Прострочено</span><strong id="client-two-overdue">0</strong><small>за плановою датою</small></article>
         <article class="client-two-summary-card client-two-summary-card--warning"><span>Без терміну</span><strong id="client-two-no-deadline">0</strong><small>потрібно уточнити</small></article>
+      </div>
+      <div class="client-info-view" data-client-two-view-panel="dashboard">
+        <div class="client-two-dashboard-grid">
+          <article class="client-two-dashboard-panel client-two-dashboard-panel--status">
+            <div class="section-heading"><p class="eyebrow">Стан робіт</p><h3>Задачі за статусами</h3></div>
+            <div id="client-two-dashboard-status" class="client-two-bars"></div>
+          </article>
+          <article class="client-two-dashboard-panel">
+            <div class="section-heading"><p class="eyebrow">Виконання</p><h3>Розробники</h3></div>
+            <div id="client-two-dashboard-developers" class="client-two-dashboard-list"></div>
+          </article>
+          <article class="client-two-dashboard-panel client-two-dashboard-panel--wide">
+            <div class="section-heading"><p class="eyebrow">Функціональні блоки</p><h3>Стан по блоках</h3></div>
+            <div id="client-two-dashboard-blocks" class="client-two-block-grid"></div>
+          </article>
+          <article class="client-two-dashboard-panel client-two-dashboard-panel--wide">
+            <div class="section-heading"><p class="eyebrow">Сервісний контур</p><h3>Задачі по сервісах</h3></div>
+            <div id="client-two-dashboard-services" class="client-two-service-grid"></div>
+          </article>
+        </div>
       </div>
       <div class="client-info-view" data-client-two-view-panel="structure">
         <p id="client-two-structure-status" class="client-filter-summary"></p>
@@ -266,6 +287,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260810-profile-scoped-tabs"></script>
+  <script src="app.js?v=20260810-client-two-dashboard"></script>
 </body>
 </html>
