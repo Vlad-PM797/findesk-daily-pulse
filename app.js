@@ -1520,7 +1520,10 @@
     setText('client-two-total', tasks.length); setText('client-two-total-note', `${clientReport.blocks?.length || 0} блоків`);
     setText('client-two-bugs', tasks.filter((task) => task.type === 'bug').length); setText('client-two-enhancements', tasks.filter((task) => task.type === 'enhancement').length); setText('client-two-new', tasks.filter((task) => task.type === 'new').length);
     setText('client-two-active', tasks.filter(isActive).length); setText('client-two-review', tasks.filter(isReview).length); setText('client-two-overdue', tasks.filter((task) => deadlineState(task) === 'overdue').length); setText('client-two-no-deadline', tasks.filter((task) => deadlineState(task) === 'none').length);
-    const splitPeople = (value) => String(value || 'інформація відсутня').split(/,\s*/).map((item) => item.trim()).filter(Boolean);
+    const splitPeople = (value) => String(value || 'інформація відсутня').split(/,\s*/).map((item) => {
+      const person = item.trim().replace(/[.;:]+$/, '');
+      return /^(інформація відсутня|не вказано|не визначено)$/i.test(person) ? 'інформація відсутня' : person;
+    }).filter(Boolean);
     const isMissing = (value) => !value || /інформація відсутня|не вказано|не визначено/i.test(String(value));
     const summaryGroups = { total: tasks, bug: tasks.filter((task) => task.type === 'bug'), enhancement: tasks.filter((task) => task.type === 'enhancement'), new: tasks.filter((task) => task.type === 'new'), active: tasks.filter(isActive), review: tasks.filter(isReview), overdue: tasks.filter((task) => deadlineState(task) === 'overdue'), 'no-deadline': tasks.filter((task) => deadlineState(task) === 'none') };
     const summaryHelp = { total: 'Усі задачі, що завантажені з current-2.md.', bug: 'Задачі, які класифіковані як баги або виправлення.', enhancement: 'Задачі на допрацювання, підтримку, перевірку або інтеграції.', new: 'Задачі нового функціоналу та нової розробки.', active: 'Задачі зі статусом роботи, активності або поточного виконання.', review: 'Задачі, де згадано перевірку, тестування або приймання.', overdue: 'Задачі, планова дата яких уже минула.', 'no-deadline': 'Задачі, для яких не вказано планову дату.' };
