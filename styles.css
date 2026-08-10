@@ -252,9 +252,16 @@ h2 {
 .client-two-mini-bars .is-danger { background: var(--red); }
 .client-two-mini-bars .is-warning { background: var(--amber); }
 .client-two-mini-bars .is-info { background: var(--blue); }
-.client-two-service-card small, .client-two-service-card p, .client-two-service-card > span { display: block; margin: 0.35rem 0 0; color: var(--muted); font-size: 0.72rem; line-height: 1.35; }
-.client-two-service-card p { color: var(--ink); }
-.client-two-service-card > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.client-two-service-card small, .client-two-service-card > span { display: block; margin: 0.35rem 0 0; color: var(--muted); font-size: 0.72rem; line-height: 1.35; }
+.client-two-service-card__scale { height: 0.45rem; margin-top: 0.65rem; overflow: hidden; background: var(--line); }
+.client-two-service-card__scale i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--blue)); }
+.client-two-service-card__legend { display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; margin-top: 0.55rem; color: var(--muted); font-size: 0.67rem; line-height: 1.3; }
+.client-two-service-card__legend span { display: inline-flex; align-items: center; gap: 0.2rem; }
+.client-two-service-card__legend i { width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--green); }
+.client-two-service-card__legend i.is-bug, .client-two-service-card__legend i.is-overdue { background: var(--red); }
+.client-two-service-card__legend i.is-enhancement { background: var(--amber); }
+.client-two-service-card__legend i.is-new { background: var(--blue); }
+.client-two-service-card__people { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .client-info-empty { margin: 1rem 0; padding: 1.2rem; border: 1px solid var(--line); background: var(--surface); }
 .client-structure-block { min-width: 0; border: 1px solid var(--client-structure-line, var(--line)); border-top: 0.28rem solid var(--client-structure-accent, var(--green)); background: var(--surface); box-shadow: var(--shadow); }
 .client-structure-block--cyan { --client-structure-accent: #1bb8d0; --client-structure-line: color-mix(in srgb, #1bb8d0 40%, var(--line)); }
