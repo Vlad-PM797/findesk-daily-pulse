@@ -243,6 +243,8 @@ h2 {
 .client-two-meter:hover .client-two-dashboard-popover, .client-two-meter:focus-visible .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-summary-card:hover > .client-two-dashboard-popover, .client-two-summary-card:focus-visible > .client-two-dashboard-popover, .client-two-dashboard-hover:hover > .client-two-dashboard-popover, .client-two-dashboard-hover:focus-visible > .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-dashboard-item small { display: block; margin-top: 0.2rem; color: var(--muted); font-size: 0.72rem; }
+.client-two-developer-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.client-two-developer-list .client-two-dashboard-item { min-width: 0; border-left: 0.25rem solid var(--blue); padding: 0.55rem 0.65rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
 .client-two-insight-list, .client-two-health-list { display: grid; gap: 0.55rem; margin-top: 0.85rem; }
 .client-two-insight-card { position: relative; border-left: 0.25rem solid var(--line); padding: 0.55rem 0.65rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
 .client-two-insight-card.is-warning { border-color: var(--amber); }
@@ -344,6 +346,7 @@ h2 {
 @media (max-width: 70rem) { .client-profile-toolbar { grid-template-columns: repeat(3, minmax(0, 1fr)); } .client-filter:first-child { grid-column: 1 / -1; } }
 @media (max-width: 70rem) { .client-two-summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 48rem) { .profile-switcher { overflow-x: auto; } .client-summary-grid, .client-two-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .client-profile-toolbar { grid-template-columns: 1fr; } .client-structure-form, .client-structure-grid, .client-two-dashboard-grid, .client-two-dashboard-panel--status .client-two-bars { grid-template-columns: 1fr; } .client-two-dashboard-panel--wide { grid-column: auto; } .client-two-block-grid, .client-two-service-grid { grid-template-columns: 1fr; } .client-two-block-status-row { grid-template-columns: 1fr; gap: 0.35rem; } .client-two-block-status-head b { margin-left: auto; } .client-filter:first-child { grid-column: auto; } .client-task__title { display: grid; } .client-type { justify-self: start; white-space: normal; } .client-task__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 48rem) { .client-two-developer-list { grid-template-columns: 1fr; } }
 
 :root[data-theme="dark"] .view-button.is-active {
   color: #101713;
