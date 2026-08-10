@@ -243,8 +243,16 @@ h2 {
 .client-two-meter:hover .client-two-dashboard-popover, .client-two-meter:focus-visible .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-summary-card:hover > .client-two-dashboard-popover, .client-two-summary-card:focus-visible > .client-two-dashboard-popover, .client-two-dashboard-hover:hover > .client-two-dashboard-popover, .client-two-dashboard-hover:focus-visible > .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-dashboard-item small { display: block; margin-top: 0.2rem; color: var(--muted); font-size: 0.72rem; }
-.client-two-developer-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.client-two-developer-list .client-two-dashboard-item { min-width: 0; border-left: 0.25rem solid var(--blue); padding: 0.55rem 0.65rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
+.client-two-developer-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+.client-two-developer-list .client-two-dashboard-item { min-width: 0; border: 1px solid var(--line); border-left: 0.35rem solid var(--blue); border-radius: 0.35rem; padding: 0.8rem 0.85rem; background: color-mix(in srgb, var(--surface) 90%, var(--line)); box-shadow: 0 0.35rem 1rem rgba(20, 27, 24, 0.07); transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease; }
+.client-two-developer-list .client-two-dashboard-item:nth-child(2n) { border-left-color: var(--green); }
+.client-two-developer-list .client-two-dashboard-item:hover { box-shadow: 0 0.55rem 1.2rem rgba(20, 27, 24, 0.12); transform: translateY(-0.08rem); }
+.client-two-developer-list .client-two-dashboard-item > div { align-items: center; padding-bottom: 0.45rem; border-bottom: 1px solid var(--line); }
+.client-two-developer-list .client-two-dashboard-item > div strong { font-size: 0.95rem; }
+.client-two-developer-list .client-two-dashboard-item > div span { border: 1px solid var(--line); border-radius: 999px; padding: 0.22rem 0.5rem; color: var(--ink); background: var(--surface); font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+.client-two-developer-list .client-two-dashboard-item small { margin-top: 0.55rem; color: var(--ink); font-size: 0.76rem; }
+.client-two-developer-list .client-two-dashboard-item i { height: 0.72rem; margin-top: 0.55rem; border-radius: 999px; }
+.client-two-developer-list .client-two-dashboard-item i b { border-radius: inherit; }
 .client-two-insight-list, .client-two-health-list { display: grid; gap: 0.55rem; margin-top: 0.85rem; }
 .client-two-insight-card { position: relative; border-left: 0.25rem solid var(--line); padding: 0.55rem 0.65rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
 .client-two-insight-card.is-warning { border-color: var(--amber); }
