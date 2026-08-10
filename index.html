@@ -138,14 +138,14 @@
       </div>
       <div class="client-info-view" data-client-two-view-panel="dashboard">
         <div class="client-two-summary-grid" aria-label="Зведення задач профілю замовника 2">
-          <article class="client-two-summary-card client-two-summary-card--total"><span>Усього задач</span><strong id="client-two-total">0</strong><small id="client-two-total-note">0 блоків</small></article>
-          <article class="client-two-summary-card client-two-summary-card--bug"><span>Баги</span><strong id="client-two-bugs">0</strong><small>помилки та виправлення</small></article>
-          <article class="client-two-summary-card client-two-summary-card--enhancement"><span>Допрацювання</span><strong id="client-two-enhancements">0</strong><small>підтримка та зміни</small></article>
-          <article class="client-two-summary-card client-two-summary-card--new"><span>Нова розробка</span><strong id="client-two-new">0</strong><small>новий функціонал</small></article>
-          <article class="client-two-summary-card"><span>В роботі</span><strong id="client-two-active">0</strong><small>активні задачі</small></article>
-          <article class="client-two-summary-card"><span>На перевірці</span><strong id="client-two-review">0</strong><small>перевірка або тестування</small></article>
-          <article class="client-two-summary-card client-two-summary-card--overdue"><span>Прострочено</span><strong id="client-two-overdue">0</strong><small>за плановою датою</small></article>
-          <article class="client-two-summary-card client-two-summary-card--warning"><span>Без терміну</span><strong id="client-two-no-deadline">0</strong><small>потрібно уточнити</small></article>
+          <article class="client-two-summary-card client-two-summary-card--total" data-client-two-summary-card="total"><span>Усього задач</span><strong id="client-two-total">0</strong><small id="client-two-total-note">0 блоків</small></article>
+          <article class="client-two-summary-card client-two-summary-card--bug" data-client-two-summary-card="bug"><span>Баги</span><strong id="client-two-bugs">0</strong><small>помилки та виправлення</small></article>
+          <article class="client-two-summary-card client-two-summary-card--enhancement" data-client-two-summary-card="enhancement"><span>Допрацювання</span><strong id="client-two-enhancements">0</strong><small>підтримка та зміни</small></article>
+          <article class="client-two-summary-card client-two-summary-card--new" data-client-two-summary-card="new"><span>Нова розробка</span><strong id="client-two-new">0</strong><small>новий функціонал</small></article>
+          <article class="client-two-summary-card" data-client-two-summary-card="active"><span>В роботі</span><strong id="client-two-active">0</strong><small>активні задачі</small></article>
+          <article class="client-two-summary-card" data-client-two-summary-card="review"><span>На перевірці</span><strong id="client-two-review">0</strong><small>перевірка або тестування</small></article>
+          <article class="client-two-summary-card client-two-summary-card--overdue" data-client-two-summary-card="overdue"><span>Прострочено</span><strong id="client-two-overdue">0</strong><small>за плановою датою</small></article>
+          <article class="client-two-summary-card client-two-summary-card--warning" data-client-two-summary-card="no-deadline"><span>Без терміну</span><strong id="client-two-no-deadline">0</strong><small>потрібно уточнити</small></article>
         </div>
         <div class="client-two-dashboard-grid">
           <article class="client-two-dashboard-panel client-two-dashboard-panel--status">
@@ -279,6 +279,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260810-client-two-dashboard-status-groups"></script>
+  <script src="app.js?v=20260810-client-two-dashboard-object-hover"></script>
 </body>
 </html>

@@ -220,6 +220,7 @@ h2 {
 .client-info-tab { min-height: 2.2rem; }
 .client-two-summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem; margin: 0.85rem 0 1rem; }
 .client-two-summary-card { min-height: 5.25rem; display: flex; flex-direction: column; justify-content: space-between; border-left: 0.28rem solid var(--green); padding: 0.65rem 0.75rem; background: var(--surface); box-shadow: var(--shadow); }
+.client-two-summary-card, .client-two-dashboard-hover { position: relative; cursor: help; }
 .client-two-summary-card--bug, .client-two-summary-card--overdue { border-color: var(--red); }
 .client-two-summary-card--enhancement, .client-two-summary-card--warning { border-color: var(--amber); }
 .client-two-summary-card--new { border-color: var(--blue); }
@@ -240,6 +241,7 @@ h2 {
 .client-two-dashboard-popover strong { color: var(--ink); font-size: 0.78rem; }
 .client-two-dashboard-popover span, .client-two-dashboard-popover small { color: var(--muted); font-size: 0.72rem; line-height: 1.35; }
 .client-two-meter:hover .client-two-dashboard-popover, .client-two-meter:focus-visible .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.client-two-summary-card:hover > .client-two-dashboard-popover, .client-two-summary-card:focus-visible > .client-two-dashboard-popover, .client-two-dashboard-hover:hover > .client-two-dashboard-popover, .client-two-dashboard-hover:focus-visible > .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-dashboard-item small { display: block; margin-top: 0.2rem; color: var(--muted); font-size: 0.72rem; }
 .client-two-block-grid, .client-two-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin-top: 0.85rem; }
 .client-two-block-card, .client-two-service-card { min-width: 0; border: 1px solid var(--line); padding: 0.7rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
