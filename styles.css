@@ -170,13 +170,14 @@ h2 {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0 0.15rem;
+  overflow-x: auto;
+  padding: 0.55rem 0 0.15rem;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.9rem;
 }
 
 .profile-switcher__label { font-weight: 700; }
-.profile-button { min-height: 2rem; border: 1px solid var(--line); border-radius: 999px; padding: 0.28rem 0.7rem; color: var(--muted); background: var(--surface); cursor: pointer; }
+.profile-button { min-height: 2.5rem; border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.85rem; color: var(--muted); background: var(--surface); cursor: pointer; font: inherit; white-space: nowrap; }
 .profile-button.is-active { color: var(--surface); border-color: var(--ink); background: var(--ink); }
 :root[data-theme="dark"] .profile-button.is-active { color: #101713; border-color: #eef7f1; background: #eef7f1; }
 .profile-panel[hidden], .view-panel[hidden] { display: none !important; }

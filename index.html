@@ -48,6 +48,12 @@
       </article>
       </section>
 
+      <div class="profile-switcher" role="group" aria-label="Профіль перегляду">
+        <span class="profile-switcher__label">Профіль:</span>
+        <button class="profile-button is-active" type="button" data-profile-target="operational" aria-pressed="true">Операційний</button>
+        <button class="profile-button" type="button" data-profile-target="client-two" aria-pressed="false">Замовник 2</button>
+        <button class="profile-button" type="button" data-profile-target="classic" aria-pressed="false">Класичний</button>
+      </div>
       <nav class="view-switcher" aria-label="Режими інфографіки">
       <button class="view-button" type="button" data-view-target="dashboard">Dashboard</button>
       <button class="view-button is-active" type="button" data-view-target="system-map">System Map</button>
@@ -55,12 +61,6 @@
       <button class="view-button" type="button" data-view-target="kanban">Kanban</button>
       <button class="view-button" type="button" data-view-target="executive">Executive</button>
       </nav>
-      <div class="profile-switcher" role="group" aria-label="Профіль перегляду">
-        <span class="profile-switcher__label">Профіль:</span>
-        <button class="profile-button is-active" type="button" data-profile-target="operational" aria-pressed="true">Операційний</button>
-        <button class="profile-button" type="button" data-profile-target="client-two" aria-pressed="false">Замовник 2</button>
-        <button class="profile-button" type="button" data-profile-target="classic" aria-pressed="false">Класичний</button>
-      </div>
     </header>
 
     <div class="view-panel" data-view="dashboard">
@@ -266,6 +266,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260810-client-two-analytics-layout"></script>
+  <script src="app.js?v=20260810-profile-switcher-layout"></script>
 </body>
 </html>
