@@ -234,6 +234,11 @@ h2 {
 .client-two-bar strong, .client-two-dashboard-item strong { color: var(--ink); }
 .client-two-bar i, .client-two-dashboard-item i { display: block; height: 0.48rem; margin-top: 0.3rem; overflow: hidden; background: var(--line); }
 .client-two-bar i b, .client-two-dashboard-item i b { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--blue)); }
+.client-two-meter { position: relative; cursor: help; outline: none; overflow: visible !important; }
+.client-two-dashboard-popover { position: absolute; z-index: 30; left: 0; top: calc(100% + 0.45rem); display: grid; gap: 0.3rem; width: min(25rem, calc(100vw - 2rem)); padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 0.45rem; color: var(--ink); background: var(--surface); box-shadow: 0 0.8rem 2rem rgba(20, 27, 24, 0.2); opacity: 0; pointer-events: none; transform: translateY(-0.25rem); transition: opacity 140ms ease, transform 140ms ease; }
+.client-two-dashboard-popover strong { color: var(--ink); font-size: 0.78rem; }
+.client-two-dashboard-popover span, .client-two-dashboard-popover small { color: var(--muted); font-size: 0.72rem; line-height: 1.35; }
+.client-two-meter:hover .client-two-dashboard-popover, .client-two-meter:focus-visible .client-two-dashboard-popover { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .client-two-dashboard-item small { display: block; margin-top: 0.2rem; color: var(--muted); font-size: 0.72rem; }
 .client-two-block-grid, .client-two-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin-top: 0.85rem; }
 .client-two-block-card, .client-two-service-card { min-width: 0; border: 1px solid var(--line); padding: 0.7rem; background: color-mix(in srgb, var(--surface) 88%, var(--line)); }
