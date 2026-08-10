@@ -404,7 +404,7 @@
       const parts = raw.includes('|') ? raw.split('|').map((part) => part.trim()).filter(Boolean) : [raw];
       const naturalText = parts[0] || '';
       const title = naturalText.split(/\s+(?:[-—]\s+)?(?=@|дедлайн|(?:Андрій|Віталій|Віталик|Олександр|Денис|Кіра|Кирило)\b)/i)[0].trim();
-      const fields = { title: stripMarkdown(title).replace(/https?:\/\/\S+/gi, '').trim(), domain, developer: 'не вказано', client: 'не вказано', developerDeadline: 'не вказано', clientDeadline: 'не вказано', duration: 'не вказано', status: 'не вказано' };
+      const fields = { title: stripMarkdown(title).replace(/https?:\/\/\S+/gi, '').trim(), domain, service: '', developer: 'не вказано', client: 'не вказано', developerDeadline: 'не вказано', clientDeadline: 'не вказано', duration: 'не вказано', status: 'не вказано' };
       const mentions = [...naturalText.matchAll(/@[A-Za-z][A-Za-z0-9_-]*/g)].map((match) => match[0]);
       if (mentions.length) fields.developer = [...new Set(mentions)].join(', ');
       parts.forEach((part) => {
@@ -413,6 +413,7 @@
         const key = match[1].trim().toLowerCase();
         const value = stripMarkdown(match[2].trim());
         if (key === 'розробник') fields.developer = value;
+        if (key === 'сервіс' || key === 'service') fields.service = value;
         if (key === 'замовник') fields.client = value;
         if (key === 'дедлайн розробника') fields.developerDeadline = value;
         if (key === 'дедлайн замовника') fields.clientDeadline = value;
@@ -1282,61 +1283,93 @@
     document.getElementById('classic-risks').innerHTML = risks.map((risk) => `<p>${escapeHtml(risk)}</p>`).join('') || '<p class="empty">Критичних ризиків не зафіксовано.</p>';
   }
 
+  const CLIENT_TWO_BASE_STRUCTURE = [
+    { name: 'Канали та інтерфейси', tone: 'cyan', services: ['Основний кабінет · frontend-nextjs', 'Адмінпанель · admin', 'Публічний сайт · lending + lending-api', 'Realtime / AI-чат · websocket-server'] },
+    { name: 'Ядро керування', tone: 'blue', services: ['Ідентифікація · auth', 'Організації · office-user', 'AI-оркестрація · main-orchestrator', 'Внутрішній шлюз · gateway + service API'] },
+    { name: 'Бізнес-домени й сервіси', tone: 'violet', services: ['Документи й кадри · agreements, document-flow, documents-reports, staff_doc', 'Облік і податки · income_accounting_book_report, calculation_ep, dps, tax_reporting_service, findesk-calendar', 'AI і комунікації · ai_chat, main-orchestrator, notifications, statistics_email', 'Комерція й контури · credit_system, way4pay, tov-core, deploy/tov-initask'] },
+    { name: 'Дані, події та спільна платформа', tone: 'amber', services: ['PostgreSQL', 'Redis', 'Kafka', 'TaskIQ', 'Файли', 'shared/'] },
+    { name: 'Зовнішні інтеграції', tone: 'green', services: ['Ідентифікація · Google Auth, Дія / Дія.Підпис', 'Держава / ЄДО · ДПС, Вчасно, МЕДОК', 'Фінанси · банки, ПРРО, WayForPay, LiqPay', 'Штучний інтелект · OpenAI, Google Gemini', 'Комунікації · Telegram, Email, SMS, Taxer.ua'] },
+    { name: 'Доставка, якість та управління', tone: 'red', services: ['Код і CI · Findesk-prod, GitHub Actions', 'Розгортання · Docker / Dokploy', 'Спостереження · GlitchTip + logs', 'Керування роботою · Worksection 311247'] }
+  ];
+
+  function readClientTwoStructure() {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem('findesk-client-two-structure') || 'null');
+      if (Array.isArray(stored) && stored.length) return stored;
+    } catch (error) {
+      console.warn('Client 2 structure preference is unavailable.', error);
+    }
+    return CLIENT_TWO_BASE_STRUCTURE.map((block) => ({ ...block, services: [...block.services] }));
+  }
+
+  function saveClientTwoStructure(structure) {
+    try { window.localStorage.setItem('findesk-client-two-structure', JSON.stringify(structure)); } catch (error) { /* local preference is optional */ }
+  }
+
+  function renderClientTwoStructure(structure, syncMessage = 'Базову структуру завантажено.') {
+    const container = document.getElementById('client-two-structure');
+    const parent = document.getElementById('client-two-structure-parent');
+    if (!container || !parent) return;
+    parent.innerHTML = '<option value="">Новий основний блок</option>' + structure.map((block, index) => `<option value="${index}">${escapeHtml(block.name)}</option>`).join('');
+    container.innerHTML = structure.map((block, blockIndex) => `<article class="client-structure-block client-structure-block--${escapeHtml(block.tone || 'cyan')}"><header><div><span class="client-structure-index">${String(blockIndex + 1).padStart(2, '0')}</span><h3>${escapeHtml(block.name)}</h3></div><button class="icon-button client-structure-remove" type="button" data-remove-block="${blockIndex}" title="Видалити блок" aria-label="Видалити блок">×</button></header><ul>${(block.services || []).map((service, serviceIndex) => `<li><span>${escapeHtml(service)}</span><button class="icon-button client-structure-remove" type="button" data-remove-service="${blockIndex}:${serviceIndex}" title="Видалити сервіс" aria-label="Видалити сервіс">×</button></li>`).join('') || '<li class="empty">Сервіси ще не додані.</li>'}</ul></article>`).join('');
+    container.querySelectorAll('[data-remove-block]').forEach((button) => button.addEventListener('click', () => {
+      structure.splice(Number(button.dataset.removeBlock), 1);
+      saveClientTwoStructure(structure);
+      renderClientTwoStructure(structure, 'Блок видалено.');
+    }));
+    container.querySelectorAll('[data-remove-service]').forEach((button) => button.addEventListener('click', () => {
+      const [blockIndex, serviceIndex] = button.dataset.removeService.split(':').map(Number);
+      structure[blockIndex].services.splice(serviceIndex, 1);
+      saveClientTwoStructure(structure);
+      renderClientTwoStructure(structure, 'Сервіс видалено.');
+    }));
+    setText('client-two-structure-status', syncMessage);
+  }
+
+  function syncClientTwoStructureFromReport(structure, report) {
+    const reportServices = [...new Set((report?.updateTasks || []).map((task) => task.service).filter(Boolean))];
+    const knownServices = new Set(structure.flatMap((block) => block.services || []));
+    const newServices = reportServices.filter((service) => !knownServices.has(service));
+    if (!newServices.length) return { structure, message: 'Структура завантажена. Нових сервісів у звіті не знайдено.' };
+    let reportBlock = structure.find((block) => block.name === 'Сервіси зі звіту');
+    if (!reportBlock) {
+      reportBlock = { name: 'Сервіси зі звіту', tone: 'amber', services: [] };
+      structure.push(reportBlock);
+    }
+    reportBlock.services.push(...newServices);
+    saveClientTwoStructure(structure);
+    return { structure, message: `Структура оновлена зі звіту: додано ${newServices.length} сервісів.` };
+  }
+
   function renderClientTwoProfile(report) {
     const root = document.querySelector('[data-profile-panel="client-two"]');
     if (!root) return;
-    const tasks = (report.updateTasks || []).map((task) => ({ ...task, type: task.type || classifyTaskType(task) }));
-    const controls = {
-      search: document.getElementById('client-two-search'),
-      block: document.getElementById('client-two-block-filter'),
-      developer: document.getElementById('client-two-developer-filter'),
-      status: document.getElementById('client-two-status-filter'),
-      type: document.getElementById('client-two-type-filter')
-    };
-    const addOptions = (select, values, emptyLabel) => {
-      if (!select || select.dataset.ready) return;
-      select.innerHTML = `<option value="">${emptyLabel}</option>${values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('')}`;
-      select.dataset.ready = 'true';
-    };
-    addOptions(controls.block, [...new Set(tasks.map((task) => task.domain).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk')), 'Всі блоки');
-    addOptions(controls.developer, [...new Set(tasks.flatMap((task) => task.developer.split(',').map((value) => value.trim())).filter((value) => value && value !== 'не вказано'))].sort(), 'Всі виконавці');
-    addOptions(controls.status, [...new Set(tasks.map((task) => task.status).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'uk')), 'Всі статуси');
-    addOptions(controls.type, ['bug', 'enhancement', 'new'], 'Всі типи');
-    if (controls.type && !controls.type.dataset.labelsReady) {
-      [...controls.type.options].forEach((option) => { if (option.value) option.textContent = taskTypeLabel(option.value); });
-      controls.type.dataset.labelsReady = 'true';
-    }
-    const render = () => {
-      const query = controls.search?.value.trim().toLowerCase() || '';
-      const filtered = tasks.filter((task) => {
-        const haystack = [task.title, task.domain, task.status, task.developer, task.client].join(' ').toLowerCase();
-        return (!query || haystack.includes(query))
-          && (!controls.block?.value || task.domain === controls.block.value)
-          && (!controls.developer?.value || task.developer.split(',').map((value) => value.trim()).includes(controls.developer.value))
-          && (!controls.status?.value || task.status === controls.status.value)
-          && (!controls.type?.value || task.type === controls.type.value);
+    let structure = readClientTwoStructure();
+    const synced = syncClientTwoStructureFromReport(structure, report);
+    structure = synced.structure;
+    renderClientTwoStructure(structure, synced.message);
+    const form = document.getElementById('client-two-structure-form');
+    if (form && !form.dataset.bound) {
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const nameInput = document.getElementById('client-two-structure-name');
+        const parentInput = document.getElementById('client-two-structure-parent');
+        const name = nameInput.value.trim();
+        const parentIndex = parentInput.value;
+        if (!name) return;
+        if (parentIndex === '') structure.push({ name, tone: 'cyan', services: [] });
+        else structure[Number(parentIndex)].services.push(name);
+        saveClientTwoStructure(structure);
+        nameInput.value = '';
+        renderClientTwoStructure(structure, parentIndex === '' ? 'Основний блок додано.' : 'Сервіс додано.');
       });
-      const countByType = (type) => filtered.filter((task) => task.type === type).length;
-      setText('client-two-total', filtered.length);
-      setText('client-two-bugs', countByType('bug'));
-      setText('client-two-enhancements', countByType('enhancement'));
-      setText('client-two-new', countByType('new'));
-      setText('client-two-filter-summary', filtered.length === tasks.length ? `${tasks.length} задач у поточному апдейті` : `Показано ${filtered.length} із ${tasks.length} задач`);
-      const groups = [...new Map(filtered.map((task) => [task.domain || 'Без блоку', null])).keys()].map((domain) => ({ domain, tasks: filtered.filter((task) => (task.domain || 'Без блоку') === domain) }));
-      const blocks = document.getElementById('client-two-blocks');
-      if (!blocks) return;
-      blocks.innerHTML = groups.map((group) => `<details class="client-block"><summary><span>${escapeHtml(group.domain)}</span><strong>${group.tasks.length}</strong></summary><div class="client-task-list">${group.tasks.map((task) => {
-        const state = taskDeadlineState(task);
-        const plannedDate = task.clientDeadline !== 'не вказано' ? task.clientDeadline : task.developerDeadline;
-        return `<article class="client-task client-task--${state.key}"><div class="client-task__title"><strong>${escapeHtml(task.title)}</strong><span class="client-type client-type--${task.type}">${escapeHtml(taskTypeLabel(task.type))}</span></div><div class="client-task__facts"><span><b>Статус</b>${escapeHtml(task.status)}</span><span><b>Виконавці</b>${escapeHtml(task.developer)}</span><span><b>Термін</b>${escapeHtml(task.duration)}</span><span><b>Планова дата</b>${escapeHtml(plannedDate)}</span><span><b>Замовники</b>${escapeHtml(task.client)}</span></div></article>`;
-      }).join('')}</div></details>`).join('') || '<p class="empty">За вибраними параметрами задач не знайдено.</p>';
-    };
-    if (!root.dataset.bound) {
-      controls.search?.addEventListener('input', render);
-      [controls.block, controls.developer, controls.status, controls.type].forEach((control) => control?.addEventListener('change', render));
-      root.dataset.bound = 'true';
+      document.getElementById('client-two-structure-reset')?.addEventListener('click', () => {
+        structure = CLIENT_TWO_BASE_STRUCTURE.map((block) => ({ ...block, services: [...block.services] }));
+        saveClientTwoStructure(structure);
+        renderClientTwoStructure(structure, 'Базову структуру відновлено.');
+      });
+      form.dataset.bound = 'true';
     }
-    render();
   }
 
   function activateProfile(profileName) {
