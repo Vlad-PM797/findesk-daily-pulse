@@ -234,7 +234,7 @@ h2 {
 .client-two-dashboard-panel--status .client-two-bars { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem 0.75rem; }
 .client-two-bar > div, .client-two-dashboard-item > div { display: flex; justify-content: space-between; gap: 0.7rem; color: var(--muted); font-size: 0.78rem; }
 .client-two-bar strong, .client-two-dashboard-item strong { color: var(--ink); }
-.client-two-bar i, .client-two-dashboard-item i { display: block; height: 0.48rem; margin-top: 0.3rem; overflow: hidden; background: var(--line); }
+.client-two-bar i, .client-two-dashboard-item i { display: block; height: 0.72rem; margin-top: 0.3rem; overflow: hidden; background: var(--line); }
 .client-two-bar i b, .client-two-dashboard-item i b { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--blue)); }
 .client-two-meter { position: relative; cursor: help; outline: none; overflow: visible !important; }
 .client-two-dashboard-popover { position: absolute; z-index: 30; left: 0; top: calc(100% + 0.45rem); display: grid; gap: 0.3rem; width: min(25rem, calc(100vw - 2rem)); padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 0.45rem; color: var(--ink); background: var(--surface); box-shadow: 0 0.8rem 2rem rgba(20, 27, 24, 0.2); opacity: 0; pointer-events: none; transform: translateY(-0.25rem); transition: opacity 140ms ease, transform 140ms ease; }
@@ -251,7 +251,7 @@ h2 {
 .client-two-insight-card strong, .client-two-health-item strong { color: var(--ink); font-size: 0.8rem; }
 .client-two-insight-card b, .client-two-health-item span { color: var(--ink); font-size: 1.1rem; }
 .client-two-insight-card small, .client-two-health-item small { display: block; margin-top: 0.25rem; color: var(--muted); font-size: 0.7rem; }
-.client-two-health-item i { display: block; height: 0.45rem; margin-top: 0.28rem; overflow: hidden; background: var(--line); }
+.client-two-health-item i { display: block; height: 0.62rem; margin-top: 0.28rem; overflow: hidden; background: var(--line); }
 .client-two-health-item i b { display: block; height: 100%; background: linear-gradient(90deg, var(--amber), var(--green)); }
 .client-two-takeaway { margin: 0.8rem 0 0; border-left: 0.3rem solid var(--blue); padding: 0.8rem 0.9rem; color: var(--ink); background: color-mix(in srgb, var(--blue) 7%, var(--surface)); line-height: 1.5; }
 .client-two-block-grid { display: grid; gap: 0.55rem; margin-top: 0.85rem; }
