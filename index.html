@@ -127,13 +127,23 @@
       <div class="section-heading">
         <p class="eyebrow">Профіль замовника 2</p>
         <h2 id="client-two-title">Дерево продукту й технічної платформи</h2>
-        <p class="section-description">Шість основних блоків проєкту та сервіси в їхньому складі. Дані задач і статусів з’являться після підключення окремого звіту.</p>
+        <p class="section-description">Шість основних блоків проєкту та сервіси в їхньому складі. Нижче можна побачити загальний стан, розподіл робіт і деталізацію кожної задачі.</p>
       </div>
       <div class="client-info-tabs" role="tablist" aria-label="Ракурс інформації замовника 2">
         <button class="tab client-info-tab is-active" type="button" data-client-two-view="structure" role="tab" aria-selected="true">Структура</button>
         <button class="tab client-info-tab" type="button" data-client-two-view="all" role="tab" aria-selected="false">Всі задачі</button>
         <button class="tab client-info-tab" type="button" data-client-two-view="active" role="tab" aria-selected="false">В роботі</button>
         <button class="tab client-info-tab" type="button" data-client-two-view="deadlines" role="tab" aria-selected="false">Дедлайни та питання</button>
+      </div>
+      <div class="client-two-summary-grid" aria-label="Зведення задач профілю замовника 2">
+        <article class="client-two-summary-card client-two-summary-card--total"><span>Усього задач</span><strong id="client-two-total">0</strong><small id="client-two-total-note">0 блоків</small></article>
+        <article class="client-two-summary-card client-two-summary-card--bug"><span>Баги</span><strong id="client-two-bugs">0</strong><small>помилки та виправлення</small></article>
+        <article class="client-two-summary-card client-two-summary-card--enhancement"><span>Допрацювання</span><strong id="client-two-enhancements">0</strong><small>підтримка та зміни</small></article>
+        <article class="client-two-summary-card client-two-summary-card--new"><span>Нова розробка</span><strong id="client-two-new">0</strong><small>новий функціонал</small></article>
+        <article class="client-two-summary-card"><span>В роботі</span><strong id="client-two-active">0</strong><small>активні задачі</small></article>
+        <article class="client-two-summary-card"><span>На перевірці</span><strong id="client-two-review">0</strong><small>перевірка або тестування</small></article>
+        <article class="client-two-summary-card client-two-summary-card--overdue"><span>Прострочено</span><strong id="client-two-overdue">0</strong><small>за плановою датою</small></article>
+        <article class="client-two-summary-card client-two-summary-card--warning"><span>Без терміну</span><strong id="client-two-no-deadline">0</strong><small>потрібно уточнити</small></article>
       </div>
       <div class="client-info-view" data-client-two-view-panel="structure">
         <div class="client-structure-toolbar" role="toolbar" aria-label="Керування структурою профілю замовника 2">
@@ -147,7 +157,18 @@
         <p id="client-two-structure-status" class="client-filter-summary"></p>
         <div id="client-two-structure" class="client-structure-grid"></div>
       </div>
-      <div class="client-info-view" data-client-two-view-panel="all" hidden><div id="client-two-tasks-all" class="client-task-list"></div></div>
+      <div class="client-info-view" data-client-two-view-panel="all" hidden>
+        <div class="client-profile-toolbar" role="search" aria-label="Фільтри задач профілю замовника 2">
+          <label class="client-filter"><span>Пошук</span><input id="client-two-task-search" type="search" placeholder="Назва, опис або джерело"></label>
+          <label class="client-filter"><span>Блок</span><select id="client-two-task-block-filter"><option value="">Усі блоки</option></select></label>
+          <label class="client-filter"><span>Сервіс</span><select id="client-two-task-service-filter"><option value="">Усі сервіси</option></select></label>
+          <label class="client-filter"><span>Виконавець</span><select id="client-two-task-developer-filter"><option value="">Усі виконавці</option></select></label>
+          <label class="client-filter"><span>Статус</span><select id="client-two-task-status-filter"><option value="">Усі статуси</option></select></label>
+          <label class="client-filter"><span>Тип роботи</span><select id="client-two-task-type-filter"><option value="">Усі типи</option></select></label>
+        </div>
+        <p id="client-two-task-filter-summary" class="client-filter-summary"></p>
+        <div id="client-two-tasks-all" class="client-task-list"></div>
+      </div>
       <div class="client-info-view" data-client-two-view-panel="active" hidden><div id="client-two-tasks-active" class="client-task-list"></div></div>
       <div class="client-info-view" data-client-two-view-panel="deadlines" hidden><div id="client-two-tasks-deadlines" class="client-task-list"></div></div>
     </section>
@@ -245,6 +266,6 @@
     </section>
   </main>
 
-    <script src="app.js?v=20260810-client-two-hover-info"></script>
+  <script src="app.js?v=20260810-client-two-analytics"></script>
 </body>
 </html>

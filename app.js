@@ -459,9 +459,15 @@
     let taskIndent = 0;
 
     const cleanHeading = (value) => stripMarkdown(value.replace(/^\s*\d+\.\s*/, '').trim());
+    const classifyType = (task) => {
+      const text = `${task.title} ${task.description || ''} ${task.status}`.toLowerCase();
+      if (/(баг|помил|bug|виправ)/i.test(text)) return 'bug';
+      if (/(доопрац|допрац|підтрим|перевір|тестув|інтеграц|налаштув|погоджен)/i.test(text)) return 'enhancement';
+      return 'new';
+    };
     const ensureTask = (title) => {
       if (!title || !block || !service) return null;
-      currentTask = { title: stripMarkdown(title).trim(), block: block.name, service: service.name, status: 'інформація відсутня', developer: 'інформація відсутня', deadline: 'інформація відсутня', source: 'інформація відсутня' };
+      currentTask = { title: stripMarkdown(title).trim(), block: block.name, service: service.name, description: 'інформація відсутня', type: '', status: 'інформація відсутня', developer: 'інформація відсутня', client: 'інформація відсутня', duration: 'інформація відсутня', deadline: 'інформація відсутня', plannedDate: 'інформація відсутня', source: 'інформація відсутня' };
       tasks.push(currentTask);
       service.tasks.push(currentTask);
       return currentTask;
@@ -517,12 +523,18 @@
       if (!field) return;
       const key = field[1].trim().toLowerCase();
       const value = stripMarkdown(field[2].trim());
+      if (key === 'опис') currentTask.description = value;
+      if (key === 'тип') currentTask.type = value;
       if (key === 'статус') currentTask.status = value;
       if (key === 'виконавець' || key === 'виконавці') currentTask.developer = value;
-      if (key === 'дедлайн' || key === 'планова дата виконання') currentTask.deadline = value;
+      if (key === 'замовник' || key === 'замовники') currentTask.client = value;
+      if (key === 'термін' || key === 'тривалість' || key === 'оцінка' || key === 'плановий термін') currentTask.duration = value;
+      if (key === 'дедлайн') { currentTask.deadline = value; currentTask.plannedDate = value; }
+      if (key === 'планова дата виконання' || key === 'запланована дата') { currentTask.plannedDate = value; currentTask.deadline = value; }
       if (key === 'джерело') currentTask.source = value;
     });
 
+    tasks.forEach((task) => { if (!task.type) task.type = classifyType(task); });
     const structure = blocks.map((item) => ({ name: item.name, tone: item.tone, services: item.services.map((itemService) => ({ name: itemService.name, children: itemService.children.map((child) => child.name), tasks: itemService.tasks })) }));
     return { title: (markdown.match(/^#\s+(.+)$/m)?.[1] || 'Замовник 2').trim(), blocks: structure, tasks };
   }
@@ -1446,15 +1458,73 @@
     const synced = clientReport.blocks?.length ? { structure, message: `Структура завантажена зі звіту: ${clientReport.tasks.length} задач.` } : syncClientTwoStructureFromReport(structure, clientReport);
     structure = synced.structure;
     renderClientTwoStructure(structure, synced.message);
-    const renderTasks = (targetId, filter) => {
-      const target = document.getElementById(targetId);
-      if (!target) return;
-      const filtered = (clientReport.tasks || []).filter((task) => !filter || filter(task));
-      target.innerHTML = filtered.map((task) => `<article class="client-task client-task-hover" tabindex="0"><div class="client-task__title"><strong>${escapeHtml(task.title)}</strong><span class="client-type">${escapeHtml(task.status)}</span></div><div class="client-task__facts"><span><b>Блок / сервіс</b>${escapeHtml(task.block)} · ${escapeHtml(task.service)}</span><span><b>Виконавець</b>${escapeHtml(task.developer)}</span><span><b>Дедлайн</b>${escapeHtml(task.deadline)}</span><span><b>Джерело</b>${escapeHtml(task.source)}</span></div><span class="client-task-hover__popover" role="tooltip"><b>${escapeHtml(task.title)}</b><span>Блок: ${escapeHtml(task.block)}</span><span>Сервіс: ${escapeHtml(task.service)}</span><span>Статус: ${escapeHtml(task.status)}</span><span>Виконавець: ${escapeHtml(task.developer)}</span><span>Дедлайн: ${escapeHtml(task.deadline)}</span><span>Джерело: ${escapeHtml(task.source)}</span></span></article>`).join('') || '<p class="empty client-info-empty">За цим ракурсом задач не знайдено.</p>';
+    const tasks = clientReport.tasks || [];
+    const typeLabels = { bug: 'Баг', enhancement: 'Допрацювання', new: 'Нова розробка' };
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const parseDate = (value) => {
+      const match = String(value || '').match(/(\d{1,2})\.(\d{1,2})\.(\d{2,4})/);
+      if (!match) return null;
+      const year = match[3].length === 2 ? Number(`20${match[3]}`) : Number(match[3]);
+      const date = new Date(year, Number(match[2]) - 1, Number(match[1])); date.setHours(0, 0, 0, 0); return date;
     };
-    renderTasks('client-two-tasks-all');
-    renderTasks('client-two-tasks-active', (task) => /активна|у роботі|перевірці/i.test(task.status));
-    renderTasks('client-two-tasks-deadlines', (task) => task.deadline !== 'інформація відсутня' || /питан|дедлайн|фідбек/i.test(`${task.title} ${task.status}`));
+    const deadlineState = (task) => {
+      const date = parseDate(task.plannedDate || task.deadline);
+      if (!date) return 'none';
+      if (date < today) return 'overdue';
+      if (date.getTime() === today.getTime() + 86400000) return 'tomorrow';
+      return 'planned';
+    };
+    const normalized = (value) => String(value || '').toLocaleLowerCase('uk-UA');
+    const isActive = (task) => /(актив|у роботі|в роботі|викону|до виконання|поточн)/i.test(task.status);
+    const isReview = (task) => /(перевір|тестув|review|прийм|погодж)/i.test(`${task.status} ${task.title}`);
+    const uniqueValues = (field) => [...new Set(tasks.flatMap((task) => String(task[field] || 'інформація відсутня').split(/,\s*/).map((value) => value.trim()).filter(Boolean)))].sort((a, b) => a.localeCompare(b, 'uk'));
+    const fillFilter = (id, values, label) => {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const selected = select.value;
+      select.innerHTML = `<option value="">${label}</option>` + values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+      if (values.includes(selected)) select.value = selected;
+    };
+    fillFilter('client-two-task-block-filter', uniqueValues('block'), 'Усі блоки');
+    fillFilter('client-two-task-service-filter', uniqueValues('service'), 'Усі сервіси');
+    fillFilter('client-two-task-developer-filter', uniqueValues('developer'), 'Усі виконавці');
+    fillFilter('client-two-task-status-filter', uniqueValues('status'), 'Усі статуси');
+    fillFilter('client-two-task-type-filter', [...new Set(tasks.map((task) => task.type))].map((type) => typeLabels[type] ? `${typeLabels[type]}|${type}` : type), 'Усі типи');
+    const filters = {
+      search: document.getElementById('client-two-task-search')?.value || '',
+      block: document.getElementById('client-two-task-block-filter')?.value || '', service: document.getElementById('client-two-task-service-filter')?.value || '',
+      developer: document.getElementById('client-two-task-developer-filter')?.value || '', status: document.getElementById('client-two-task-status-filter')?.value || '', type: document.getElementById('client-two-task-type-filter')?.value || ''
+    };
+    const matchesFilters = (task) => {
+      const haystack = normalized(`${task.title} ${task.description} ${task.source}`);
+      return (!filters.search || haystack.includes(normalized(filters.search))) && (!filters.block || task.block === filters.block) && (!filters.service || task.service === filters.service) && (!filters.developer || String(task.developer).split(/,\s*/).includes(filters.developer)) && (!filters.status || task.status === filters.status) && (!filters.type || `${typeLabels[task.type] || task.type}|${task.type}` === filters.type);
+    };
+    const renderTask = (task) => {
+      const state = deadlineState(task);
+      const typeLabel = typeLabels[task.type] || task.type || 'Тип не вказано';
+      return `<article class="client-task client-task--${state} client-task-hover" tabindex="0"><div class="client-task__title"><strong>${escapeHtml(task.title)}</strong><span class="client-type client-type--${escapeHtml(task.type)}">${escapeHtml(typeLabel)} · ${escapeHtml(task.status)}</span></div><div class="client-task__facts"><span><b>Блок / сервіс</b>${escapeHtml(task.block)} · ${escapeHtml(task.service)}</span><span><b>Опис</b>${escapeHtml(task.description)}</span><span><b>Виконавці</b>${escapeHtml(task.developer)}</span><span><b>Замовники</b>${escapeHtml(task.client)}</span><span><b>Термін / дата</b>${escapeHtml(task.duration)} · ${escapeHtml(task.plannedDate)}</span><span><b>Джерело</b>${escapeHtml(task.source)}</span></div><span class="client-task-hover__popover" role="tooltip"><b>${escapeHtml(task.title)}</b><span>Тип: ${escapeHtml(typeLabel)}</span><span>Блок: ${escapeHtml(task.block)}</span><span>Сервіс: ${escapeHtml(task.service)}</span><span>Статус: ${escapeHtml(task.status)}</span><span>Виконавці: ${escapeHtml(task.developer)}</span><span>Замовники: ${escapeHtml(task.client)}</span><span>Термін: ${escapeHtml(task.duration)}</span><span>Запланована дата: ${escapeHtml(task.plannedDate)}</span><span>Джерело: ${escapeHtml(task.source)}</span></span></article>`;
+    };
+    const renderTasks = (targetId, list) => {
+      const target = document.getElementById(targetId); if (!target) return;
+      target.innerHTML = list.map(renderTask).join('') || '<p class="empty client-info-empty">За цим ракурсом задач не знайдено.</p>';
+    };
+    const renderAll = () => {
+      const filtered = tasks.filter(matchesFilters);
+      const active = filtered.filter(isActive);
+      const deadlines = filtered.filter((task) => deadlineState(task) !== 'none' || /питан|дедлайн|фідбек/i.test(`${task.title} ${task.status}`));
+      renderTasks('client-two-tasks-all', filtered);
+      renderTasks('client-two-tasks-active', active);
+      renderTasks('client-two-tasks-deadlines', deadlines);
+      setText('client-two-task-filter-summary', `Показано ${filtered.length} з ${tasks.length} задач`);
+    };
+    setText('client-two-total', tasks.length); setText('client-two-total-note', `${clientReport.blocks?.length || 0} блоків`);
+    setText('client-two-bugs', tasks.filter((task) => task.type === 'bug').length); setText('client-two-enhancements', tasks.filter((task) => task.type === 'enhancement').length); setText('client-two-new', tasks.filter((task) => task.type === 'new').length);
+    setText('client-two-active', tasks.filter(isActive).length); setText('client-two-review', tasks.filter(isReview).length); setText('client-two-overdue', tasks.filter((task) => deadlineState(task) === 'overdue').length); setText('client-two-no-deadline', tasks.filter((task) => deadlineState(task) === 'none').length);
+    renderAll();
+    if (!root.dataset.filtersBound) {
+      ['search', 'block-filter', 'service-filter', 'developer-filter', 'status-filter', 'type-filter'].forEach((suffix) => document.getElementById(`client-two-task-${suffix}`)?.addEventListener(suffix === 'search' ? 'input' : 'change', () => renderClientTwoProfile(report, clientReport)));
+      root.dataset.filtersBound = 'true';
+    }
     if (!root.dataset.viewsBound) {
       root.querySelectorAll('[data-client-two-view]').forEach((button) => button.addEventListener('click', () => {
         const view = button.dataset.clientTwoView;
